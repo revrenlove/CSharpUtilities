@@ -8,8 +8,8 @@ import { Util } from '../util';
 
 export class GenericTemplateHandler {
 
-    // TODO: Double check on windows...
-    private static readonly filenameRegex = /\/[^\/]+$/i;
+    // TODO: Double check on linux...
+    private static readonly filenameRegex = new RegExp(`\\${path.sep}[^\\${path.sep}]+$`);
 
     private static textDecoder = new TextDecoder();
 
@@ -122,7 +122,9 @@ export class GenericTemplateHandler {
 
         if (newFileDirectory !== projectFileDirectory) {
 
-            const pathRegex = new RegExp(path.sep, 'g');
+            const escapedSeparator = path.sep.replace(/\\/g, '\\\\');
+
+            const pathRegex = new RegExp(escapedSeparator, 'g');
 
             const subNamespace =
                 newFileDirectory
