@@ -27,6 +27,8 @@ export class GenericTemplateHandler {
 
         const namespace = await this.getFullNamespace(newFileUris[0]);
 
+        if (!namespace) { return; }
+
         const template: ItemFileTemplate = {
             namespace: namespace,
             objectType: TemplateType[templateType],
@@ -133,13 +135,10 @@ export class GenericTemplateHandler {
         return namespace;
     }
 
-    // TODO: This throws an exception... handle that...
-    // TODO: I'm not sure what I meant by the previous line...
     private static async getProjectFilePath(directoryFsPath: string): Promise<string> {
 
         let projectFilePath: string;
 
-        // TODO: Get rid of the magic shit.. make it super verbose and easy to read... fuck performance... for now...
         const directoryUri = vscode.Uri.file(directoryFsPath);
 
         const nameAndTypeArray = await vscode.workspace.fs.readDirectory(directoryUri);
@@ -155,13 +154,8 @@ export class GenericTemplateHandler {
 
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(directoryFsPath));
 
-        if (!workspaceFolder) {
-            // TODO: This shouldn't happen...
-            throw new Error("You can only add an item in a C# project folder.");
-        }
-
-        if (workspaceFolder.uri.fsPath === directoryFsPath) {
-            throw new Error("You can only add an item in a C# project folder.");
+        if (workspaceFolder?.uri.fsPath === directoryFsPath) {
+            await vscode.window.showErrorMessage("You can only add an item in a C# project folder.");
         }
 
         projectFilePath = await this.getProjectFilePath(directoryFsPath.replace(this.filenameRegex, ''));
