@@ -1,0 +1,240 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+import { TextEncoder, TextDecoder } from 'util';
+import { Config } from '../config';
+import { ItemFileTemplate } from '../templates/itemFileTemplate';
+import { TemplateType } from "../templates/templateType";
+import { Util } from '../util';
+
+export class GenericTemplateHandler {
+
+    // TODO: Double check on windows...
+    private static readonly filenameRegex = /\/[^\/]+$/i;
+
+    private static textDecoder = new TextDecoder();
+
+    public static async generate(templateType: TemplateType, contextualUri: vscode.Uri): Promise<void> {
+
+        let objectName = await this.getObjectName(templateType);
+
+        if (!objectName) { return; }
+
+        objectName = this.sanitizeName(objectName);
+
+        const newFileUris = await this.getNewFileUris(contextualUri, objectName);
+
+        if (await this.isDuplicateFile(newFileUris[1])) { return; }
+
+        const namespace = await this.getFullNamespace(newFileUris[0]);
+
+        const template: ItemFileTemplate = {
+            namespace: namespace,
+            objectType: TemplateType[templateType],
+            objectName: objectName,
+        };
+
+        const fileContentsString = await this.populateTemplate(template);
+
+        const fileContents = new TextEncoder().encode(fileContentsString);
+
+        await vscode.workspace.fs.writeFile(newFileUris[1], Uint8Array.from(fileContents));
+
+        await this.openEditor(newFileUris[1]);
+    }
+
+    private static async getObjectName(templateType: TemplateType): Promise<string | undefined> {
+
+        const templateTypeName = Util.capitalizeFirstLetter(TemplateType[templateType]);
+
+        let placeHolder = `MyAwesome${templateTypeName}`;
+
+        if (templateType === TemplateType.interface) {
+            placeHolder = `I${placeHolder}`;
+        }
+
+        const objectName = await vscode.window.showInputBox({
+            "prompt": `Please enter the name of the new ${templateTypeName}...`,
+            "placeHolder": placeHolder
+        });
+
+        return objectName;
+    }
+
+    private static sanitizeName(objectName: string): string {
+
+        const csExtRgx = /\.cs$/;
+
+        if (csExtRgx.test(objectName)) {
+            objectName = objectName.replace(csExtRgx, '');
+        }
+
+        return objectName;
+    }
+
+    private static async getNewFileUris(contextualUri: vscode.Uri, objectName: string)
+        : Promise<[directory: vscode.Uri, file: vscode.Uri]> {
+
+        let newFileDirectoryPath: string;
+
+        const stat = await vscode.workspace.fs.stat(contextualUri);
+
+        if (stat.type === vscode.FileType.Directory) {
+
+            newFileDirectoryPath = contextualUri.fsPath;
+        }
+        else {
+            newFileDirectoryPath = contextualUri.fsPath.replace(this.filenameRegex, '');
+        }
+
+        const newFilePath = `${newFileDirectoryPath}/${objectName}.cs`;
+
+        const newDirectoryUri = vscode.Uri.file(newFileDirectoryPath);
+        const newFileUri = vscode.Uri.file(newFilePath);
+
+        return [newDirectoryUri, newFileUri];
+    }
+
+    private static async isDuplicateFile(newFileUri: vscode.Uri): Promise<boolean> {
+
+        try {
+            await vscode.workspace.fs.stat(newFileUri);
+            await vscode.window.showErrorMessage(`File already exists: ${newFileUri.fsPath}`);
+
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    private static async getFullNamespace(contextualDirectoryUri: vscode.Uri): Promise<string> {
+
+        const projectFilePath = await this.getProjectFilePath(contextualDirectoryUri.fsPath);
+
+        const projectFileUri = vscode.Uri.file(projectFilePath);
+
+        let namespace = await this.getRootNamespace(projectFileUri);
+
+        const newFileDirectory = contextualDirectoryUri.fsPath;
+        const projectFileDirectory = projectFileUri.fsPath.replace(this.filenameRegex, '');
+
+        if (newFileDirectory !== projectFileDirectory) {
+
+            const pathRegex = new RegExp(path.sep, 'g');
+
+            const subNamespace =
+                newFileDirectory
+                    .replace(projectFileDirectory, '')
+                    .replace(pathRegex, '.');
+
+            namespace += subNamespace;
+        }
+
+        return namespace;
+    }
+
+    // TODO: This throws an exception... handle that...
+    // TODO: I'm not sure what I meant by the previous line...
+    private static async getProjectFilePath(directoryFsPath: string): Promise<string> {
+
+        let projectFilePath: string;
+
+        // TODO: Get rid of the magic shit.. make it super verbose and easy to read... fuck performance... for now...
+        const directoryUri = vscode.Uri.file(directoryFsPath);
+
+        const nameAndTypeArray = await vscode.workspace.fs.readDirectory(directoryUri);
+
+        const nameAndType = nameAndTypeArray.find(nameAndType => /\.csproj$/.test(nameAndType[0]));
+
+        if (nameAndType) {
+
+            projectFilePath = path.join(directoryFsPath, nameAndType[0]);
+
+            return projectFilePath;
+        }
+
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(directoryFsPath));
+
+        if (!workspaceFolder) {
+            // TODO: This shouldn't happen...
+            throw new Error("You can only add an item in a C# project folder.");
+        }
+
+        if (workspaceFolder.uri.fsPath === directoryFsPath) {
+            throw new Error("You can only add an item in a C# project folder.");
+        }
+
+        projectFilePath = await this.getProjectFilePath(directoryFsPath.replace(this.filenameRegex, ''));
+
+        return projectFilePath;
+    }
+
+    private static async getRootNamespace(projectFileUri: vscode.Uri): Promise<string> {
+
+        let namespace: string;
+
+        const fileContentsArray = await vscode.workspace.fs.readFile(projectFileUri);
+
+        const fileContents = this.textDecoder.decode(fileContentsArray);
+
+        const rgx = /<RootNamespace>(.+)<\/ *RootNamespace>/;
+
+        if (!rgx.test(fileContents)) {
+
+            const filenameMatch = projectFileUri.fsPath.match(this.filenameRegex);
+
+            if (!filenameMatch) {
+                // This should never happen, but it's here so VSCode's linter will stop barking at me.
+                throw new Error("If you see this, file an issue on the github repo. Error Code: l33th4x0r");
+            }
+
+            namespace =
+                filenameMatch[0]
+                    .substr(1)
+                    .replace(/\.csproj$/, '');
+
+            return namespace;
+        }
+
+        // if (rgx.test(fileContents)) {
+        const match = fileContents.match(rgx);
+
+        if (match === null) {
+            // This should never happen, but it's here so VSCode's linter will stop barking at me.
+            throw new Error("If you see this, file an issue on the github repo. Error Code: l33th4x0r");
+        }
+
+        namespace = match[1];
+
+        return namespace;
+    }
+
+    private static async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
+
+        const templateUri = vscode.Uri.file(Config.genericTemplatePath);
+
+        const templateFileContentsArray = await vscode.workspace.fs.readFile(templateUri);
+
+        let template = this.textDecoder.decode(templateFileContentsArray);
+
+        for (const [placeholder, value] of Object.entries(templateValues)) {
+
+            const rgx = new RegExp(`%${placeholder}%`);
+
+            template = template.replace(rgx, value);
+        }
+
+        return template;
+    }
+
+    private static async openEditor(uri: vscode.Uri): Promise<void> {
+
+        const editor = await vscode.window.showTextDocument(uri);
+
+        const newSelection = new vscode.Selection(
+            Config.genericTemplateCursorPosition,
+            Config.genericTemplateCursorPosition);
+
+        editor.selection = newSelection;
+    }
+}
