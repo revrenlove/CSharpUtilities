@@ -8,7 +8,6 @@ import { Util } from '../util';
 
 export class GenericTemplateHandler {
 
-    // TODO: Double check on linux...
     private static readonly filenameRegex = new RegExp(`\\${path.sep}[^\\${path.sep}]+$`);
 
     private static textDecoder = new TextDecoder();
