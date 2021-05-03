@@ -1,70 +1,64 @@
-# c-sharp-utilities README
+# C# Utilities
 
-This is the README for your extension "c-sharp-utilities". After writing up a brief description, we recommend including the following sections.
+## Tl;dr
+
+Easily add C# items from the Explorer context menu. New features coming soon...
+
+Right-click -> Add C# Item -> Class (or Interface, etc)
+
+![Adding a New Item](./assets/images/demo.gif)
+
+## To answer the question... "Why?"
+
+This extension is designed to aid in the development of .net projects that use C#.
+
+## Telemetry/Privacy
+
+This extension collects no data from anything. Every release of this extension is from source code publicly available.
+
+I cannot speak on behalf of the packages utilized in this extension (which can be found in the `package.json`).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Add C# Item
 
-For example if there is an image subfolder under your extension project workspace:
+Add a new C# file from the context menu of the Explorer view in Visual Studio Code. The class/interface/etc is automatically generated and includes the proper namespace.
 
-\!\[feature X\]\(images/feature-x.png\)
+- _NOTE:_ The namespace is derived from either the `Project -> PropertyGroup -> RootNamespace` element in the `.csproj` file (if specified) or the filename of the `.csproj` file, followed by `.` separations for each subfolder.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Adding a New Item](./assets/images/demo.gif)
+![Adding a New Item](./assets/images/logo.png)
+
+Currently the following types of items are supported:
+
+- Class
+- Interface
+- Record
+- Enum
+- Struct
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Visual Studio Code v1.55.0 or higher.
 
-## Extension Settings
+## Upcoming Features
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- Ability to add new C# projects.
+- Ability to manage project references.
+- Ability to manage NuGet packages.
 
-For example:
+## [Known Issues](https://github.com/revrenlove/CSharpUtilities/issues)
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Extension is automatically enabled on startup of Visual Studio Code.
+  - Menu options are always available (even in projects that aren't .net).
+- Most errors fail silently.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.1.0
 
-### 1.0.0
+This is the inaugural release of this extension. I'm sure there are bugs, and I've filed several issues so far regarding future plans for this extension.
 
-Initial release of ...
+## [Contributing](https://github.com/revrenlove/CSharpUtilities/blob/main/CONTRIBUTING.md)
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Yeah, click that link above...
