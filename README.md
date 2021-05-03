@@ -10,7 +10,9 @@ Right-click -> Add C# Item -> Class (or Interface, etc)
 
 ## To answer the question... "Why?"
 
-This extension is designed to aid in the development of .net projects that use C#.
+This extension is designed to aid in the development of .net projects that use C#. It is also actively maintained... And those other extensions don't have that.
+
+I'm gonna make my own C# extension... with ******* and *********.
 
 ## Telemetry/Privacy
 
