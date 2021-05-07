@@ -47,6 +47,10 @@
 			{
 				"command": "c-sharp-utilities.addStruct",
 				"title": "Struct"
+			},
+			{
+				"command": "c-sharp-utilities.manageProjectReferences",
+				"title": "Manage Project References..."
 			}
 		],
 		"menus": {
@@ -54,6 +58,10 @@
 				{
 					"submenu": "cSharp.addItem",
 					"when": "c-sharp-utilities.enableMenus"
+				},
+				{
+					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "resourceExtname == .csproj"
 				}
 			],
 			"cSharp.addItem": [
@@ -125,6 +133,7 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
+		"fast-xml-parser": "^3.19.0",
 		"inversify": "^5.0.5",
 		"reflect-metadata": "^0.1.13",
 		"util": "^0.12.3"
