@@ -121,7 +121,7 @@ export class GenericTemplateHandler {
 
         const newFileDirectory = contextualDirectoryUri.fsPath;
 
-        const projectFileDirectory = path.parse(projectFileUri.fsPath).name;
+        const projectFileDirectory = path.parse(projectFilePath).dir;
 
         if (newFileDirectory !== projectFileDirectory) {
 
