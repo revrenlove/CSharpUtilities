@@ -57,7 +57,7 @@
 			"explorer/context": [
 				{
 					"submenu": "cSharp.addItem",
-					"when": "c-sharp-utilities.enableMenus"
+					"when": "resourceExtname == .csproj || resourceExtname == .cs || explorerResourceIsFolder"
 				},
 				{
 					"command": "c-sharp-utilities.manageProjectReferences",
