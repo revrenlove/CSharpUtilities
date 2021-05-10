@@ -10,7 +10,8 @@
 		"rootDir": "src",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"strict": true
+		"strict": true,
+		"noImplicitAny": true
 	},
 	"exclude": [
 		"node_modules",

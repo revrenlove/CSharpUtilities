@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as csprojXmlParser from '../lib/csproj-xml-parser';
 import { TextEncoder, TextDecoder } from 'util';
 import { Config } from '../config';
 import { ItemFileTemplate } from '../templates/itemFileTemplate';
@@ -115,10 +116,13 @@ export class GenericTemplateHandler {
 
         const projectFileUri = vscode.Uri.file(projectFilePath);
 
-        let namespace = await this.getRootNamespace(projectFileUri);
+        const csProject = await csprojXmlParser.parseFromFile(projectFileUri);
+
+        let namespace = csProject.rootNamespace;
 
         const newFileDirectory = contextualDirectoryUri.fsPath;
-        const projectFileDirectory = projectFileUri.fsPath.replace(this.filenameRegex, '');
+
+        const projectFileDirectory = path.parse(projectFileUri.fsPath).name;
 
         if (newFileDirectory !== projectFileDirectory) {
 
@@ -163,46 +167,6 @@ export class GenericTemplateHandler {
         projectFilePath = await this.getProjectFilePath(directoryFsPath.replace(this.filenameRegex, ''));
 
         return projectFilePath;
-    }
-
-    private static async getRootNamespace(projectFileUri: vscode.Uri): Promise<string> {
-
-        let namespace: string;
-
-        const fileContentsArray = await vscode.workspace.fs.readFile(projectFileUri);
-
-        const fileContents = this.textDecoder.decode(fileContentsArray);
-
-        const rgx = /<RootNamespace>(.+)<\/ *RootNamespace>/;
-
-        if (!rgx.test(fileContents)) {
-
-            const filenameMatch = projectFileUri.fsPath.match(this.filenameRegex);
-
-            if (!filenameMatch) {
-                // This should never happen, but it's here so VSCode's linter will stop barking at me.
-                throw new Error("If you see this, file an issue on the github repo. Error Code: l33th4x0r");
-            }
-
-            namespace =
-                filenameMatch[0]
-                    .substr(1)
-                    .replace(/\.csproj$/, '');
-
-            return namespace;
-        }
-
-        // if (rgx.test(fileContents)) {
-        const match = fileContents.match(rgx);
-
-        if (match === null) {
-            // This should never happen, but it's here so VSCode's linter will stop barking at me.
-            throw new Error("If you see this, file an issue on the github repo. Error Code: l33th4x0r");
-        }
-
-        namespace = match[1];
-
-        return namespace;
     }
 
     private static async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
