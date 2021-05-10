@@ -92,7 +92,7 @@ Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUt
 
 ## Release Notes
 
-### 0.2.0
+### 0.3.1
 
 - Added feature to manage project references.
 - Code cleanup & documentation updating.
