@@ -1,35 +1,22 @@
 # C# Utilities
 
-## Tl;dr
+_That "other" blue soda can, when you already have a red can and a blue can to choose from._
 
-Easily add C# items from the Explorer context menu. New features coming soon...
+This extension provides some helpful features to _hopefully_ speed up your workflow when developing .net applications in VSCode.
 
-Right-click -> Add C# Item -> Class (or Interface, etc)
+Features currently include:
 
-![Adding a New Item](./assets/images/demo.gif)
-
-## To answer the question... "Why?"
-
-This extension is designed to aid in the development of .net projects that use C#. It is also actively maintained... And those other extensions don't have that.
-
-I'm gonna make my own C# extension... with ******* and *********.
-
-## Telemetry/Privacy
-
-This extension collects no data from anything. Every release of this extension is from source code publicly available.
-
-I cannot speak on behalf of the packages utilized in this extension (which can be found in the `package.json`).
+- Adding a class/interface/etc from the Explorer side bar
+- Managing project references
+- Not collecting any data.
 
 ## Features
 
 ### Add C# Item
 
-Add a new C# file from the context menu of the Explorer view in Visual Studio Code. The class/interface/etc is automatically generated and includes the proper namespace.
+Add a new C# file from the Explorer view.
 
-- _NOTE:_ The namespace is derived from either the `Project -> PropertyGroup -> RootNamespace` element in the `.csproj` file (if specified) or the filename of the `.csproj` file, followed by `.` separations for each subfolder.
-
-![Adding a New Item](./assets/images/demo.gif)
-![Adding a New Item](./assets/images/logo.png)
+This menu is available when you right-click a `.cs` file, a `.csproj` file, or a folder.
 
 Currently the following types of items are supported:
 
@@ -39,21 +26,67 @@ Currently the following types of items are supported:
 - Enum
 - Struct
 
+#### **Notes**
+
+- If you attempt to add an item by right-clicking a file/directory that is **not** inside a directory that contains a `.csproj` file (or subdirectory thereof), you will be alerted as such.
+
+- The namespace is derived from either the `Project -> PropertyGroup -> RootNamespace` element in the `.csproj` file (if specified) or the filename of the `.csproj` file. The namespace will have sub-namespacing that respects the folder tree.
+
+![Adding a New Item](./assets/images/add-item.gif)
+
+### Manage Project References
+
+// TODO: Add animated gif...
+
+Right-clicking a `.csproj` file gives your the option to "Manage Project References.." which will open a menu showing all available projects in the workspace, with the ones already referenced being checked.
+
+Simply check the projects you wish to reference and uncheck the ones you don't.
+
+#### **Notes**
+
+- `dotnet` _does_ allow for circular project references... So... watch out for that, because many times, the whole thing will still build fine. This extension _may_ support checking for that in the future.
+
+- This feature does not manually edit the `.csproj` file - it actually executes the commands in an integrated terminal instance. So, if things do not go as you expect, check your integrated terminal named `dotnet` for any weirdness, and, please, feel free to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
+
 ## Requirements
 
-Visual Studio Code v1.55.0 or higher.
+- Visual Studio Code v1.55.0 or higher.
+- .NET 5 or .NET Core SDK
 
 ## Upcoming Features
 
 - Ability to add new C# projects.
-- Ability to manage project references.
 - Ability to manage NuGet packages.
 
-## [Known Issues](https://github.com/revrenlove/CSharpUtilities/issues)
+## To answer the question... "Why?"
 
-- Extension is automatically enabled on startup of Visual Studio Code.
-  - Menu options are always available (even in projects that aren't .net).
-- Most errors fail silently.
+There are several popular extensions available that attempt to achieve what this extension attempts to achieve... I just haven't found one that ticks the following boxes:
+
+- Actively maintained
+- Bug-free
+- Lightweight
+- Not trying to do "too much"
+
+So, I decided I'll make my own C# extension... [with blackjack... and hookers](https://knowyourmeme.com/memes/im-going-to-build-my-own-theme-park-with-blackjack-and-hookers).\*
+
+\* Blackjack and hookers not included.
+
+## Telemetry/Privacy
+
+This extension collects no data from anything. Every release of this extension is from source code publicly available. The only insight into metrics the developers or anyone have are the download numbers on the [marketplace page](https://marketplace.visualstudio.com/items?itemName=revrenlove.c-sharp-utilities) and any [issues](https://github.com/revrenlove/CSharpUtilities/issues) or [discussions](https://github.com/revrenlove/CSharpUtilities/discussions) that users create on the [github repo](https://github.com/revrenlove/CSharpUtilities).
+
+I cannot speak on behalf of the packages utilized in this extension :
+
+- [fast-xml-parser](https://www.npmjs.com/package/fast-xml-parser)
+- [inversify](https://www.npmjs.com/package/inversify)
+- [reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
+- [util](https://www.npmjs.com/package/util)
+
+## [Issues](https://github.com/revrenlove/CSharpUtilities/issues)
+
+Check the [bugs](https://github.com/revrenlove/CSharpUtilities/labels/bug) for things that may actually impact functionality.
+
+Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
 ## Release Notes
 
@@ -63,4 +96,4 @@ This is the inaugural release of this extension. I'm sure there are bugs, and I'
 
 ## [Contributing](https://github.com/revrenlove/CSharpUtilities/blob/main/CONTRIBUTING.md)
 
-Yeah, click that link above...
+Yeah, click that link above... Still sorting this part out. I'm just a one-man operation.

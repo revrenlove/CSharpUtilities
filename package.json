@@ -47,6 +47,10 @@
 			{
 				"command": "c-sharp-utilities.addStruct",
 				"title": "Struct"
+			},
+			{
+				"command": "c-sharp-utilities.manageProjectReferences",
+				"title": "Manage Project References..."
 			}
 		],
 		"menus": {
@@ -54,6 +58,10 @@
 				{
 					"submenu": "cSharp.addItem",
 					"when": "c-sharp-utilities.enableMenus"
+				},
+				{
+					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "resourceExtname == .csproj"
 				}
 			],
 			"cSharp.addItem": [
