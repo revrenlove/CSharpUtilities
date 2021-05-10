@@ -26,7 +26,7 @@ Currently the following types of items are supported:
 - Enum
 - Struct
 
-#### **Notes**
+#### **Note: When Adding an Item**
 
 - If you attempt to add an item by right-clicking a file/directory that is **not** inside a directory that contains a `.csproj` file (or subdirectory thereof), you will be alerted as such.
 
@@ -36,13 +36,13 @@ Currently the following types of items are supported:
 
 ### Manage Project References
 
-// TODO: Add animated gif...
-
-Right-clicking a `.csproj` file gives your the option to "Manage Project References.." which will open a menu showing all available projects in the workspace, with the ones already referenced being checked.
+Right-clicking a `.csproj` file gives your the option to "Manage Project References..." which will open a menu showing all available projects in the workspace, with the ones already referenced being checked.
 
 Simply check the projects you wish to reference and uncheck the ones you don't.
 
-#### **Notes**
+![Adding a New Item](./assets/images/project-ref-demo.gif)
+
+#### **Note: When Managing Project References**
 
 - `dotnet` _does_ allow for circular project references... So... watch out for that, because many times, the whole thing will still build fine. This extension _may_ support checking for that in the future.
 
@@ -56,7 +56,9 @@ Simply check the projects you wish to reference and uncheck the ones you don't.
 ## Upcoming Features
 
 - Ability to add new C# projects.
+- Ability to remove C# projects (and all references thereof).
 - Ability to manage NuGet packages.
+- Warning when adding circular project references.
 
 ## To answer the question... "Why?"
 
@@ -89,6 +91,11 @@ Check the [bugs](https://github.com/revrenlove/CSharpUtilities/labels/bug) for t
 Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
 ## Release Notes
+
+### 0.2.0
+
+- Added feature to manage project references.
+- Code cleanup & documentation updating.
 
 ### 0.1.0
 
