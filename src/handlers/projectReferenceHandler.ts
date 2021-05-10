@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as parser from 'fast-xml-parser';
+import * as csprojXmlParser from '../lib/csproj-xml-parser';
 import { FileHandler } from './fileHandler';
 import { CsProjFile } from './csProjFile';
 import { inject, injectable } from 'inversify';
@@ -83,32 +83,19 @@ export class ProjectReferenceHandler {
 
     private async getReferencedProjectPaths(projectUri: vscode.Uri): Promise<string[]> {
 
-        const PROJECT_KEY = '@_Include';
+        const cSharpProject = await csprojXmlParser.parseFromFile(projectUri);
 
-        const xml = await this.fileHandler.readFile(projectUri);
-        const json = parser.parse(xml, { ignoreAttributes: false });
+        const absolutePaths =
+            cSharpProject
+                .projectReferences
+                .map(p => {
 
-        let projectPaths: string[];
+                    const absolutePath = this.relativePathToAbsolutePath(p, projectUri.fsPath);
 
-        type KeyedString = { [k: string]: string; };
+                    return absolutePath;
+                });
 
-        const projectReference: KeyedString[] | KeyedString | null = json?.Project?.ItemGroup?.ProjectReference;
-
-        if (!projectReference) {
-            projectPaths = [];
-        }
-        else if (Array.isArray(projectReference)) {
-            projectPaths = projectReference.map((n: KeyedString) => n[PROJECT_KEY]);
-        }
-        else {
-            projectPaths = [projectReference[PROJECT_KEY]];
-        }
-
-        const absoluteProjectPaths =
-            projectPaths
-                .map(p => this.relativePathToAbsolutePath(p, projectUri.fsPath));
-
-        return absoluteProjectPaths;
+        return absolutePaths;
     }
 
     private uriToQuickPick(uri: vscode.Uri, picked: boolean = false): CsProjFile {
