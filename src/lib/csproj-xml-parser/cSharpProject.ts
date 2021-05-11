@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import * as parser from 'fast-xml-parser';
 
 type KeyedString = { [k: string]: string; };
@@ -37,6 +38,47 @@ export class CSharpProject {
         }
 
         const namespace: string | undefined = propertyGroupNode.RootNamespace;
+
+        return namespace;
+    }
+
+    private getRootNamespaceNewTestgetRootNamespace(json: any): string | undefined {
+
+        const propertyGroupNode: JsonNode = json?.Project?.PropertyGroup;
+
+        if (!propertyGroupNode) { return; }
+
+        let namespace: string | undefined;
+
+        if (!Array.isArray(propertyGroupNode)) {
+
+            namespace = propertyGroupNode.RootNamespace;
+
+            return namespace;
+        }
+
+        for (let i = 0; i < propertyGroupNode.length; i++) {
+
+            if (!propertyGroupNode[i].RootNamespace) { continue; }
+
+            if (!namespace) {
+
+                namespace = propertyGroupNode[i].RootNamespace;
+
+                continue;
+            }
+
+            if (namespace !== propertyGroupNode[i].RootNamespace) {
+
+                const msg =
+                    'Multiple root namespaces were defined in the .csproj file.\n' +
+                    'Deferring to the name of the project as the root namespace.';
+
+                namespace = undefined;
+
+                vscode.window.showInformationMessage(msg);
+            }
+        }
 
         return namespace;
     }
