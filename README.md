@@ -30,7 +30,9 @@ Currently the following types of items are supported:
 
 - If you attempt to add an item by right-clicking a file/directory that is **not** inside a directory that contains a `.csproj` file (or subdirectory thereof), you will be alerted as such.
 
-- The namespace is derived from either the `Project -> PropertyGroup -> RootNamespace` element in the `.csproj` file (if specified) or the filename of the `.csproj` file. The namespace will have sub-namespacing that respects the folder tree.
+- The namespace is derived from either the `Project -> PropertyGroup -> RootNamespace` element in the `.csproj` file (if specified) or the project name. The namespace will have sub-namespacing that respects the folder tree.
+
+  - If multiple `PropertyGroup` elements exist in the `.csproj` file with differing `RootNamespace` values, it will defer to the project name.
 
 ![Adding a New Item](./assets/images/add-item.gif)
 
