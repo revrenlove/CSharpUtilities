@@ -21,22 +21,39 @@ export class CSharpProject {
     public readonly projectReferences: string[];
     public readonly nugetPackageReferences: string[];
 
+    // If multiple `PropertyGroup` elements exist with different `RootNamespace`
+    //  values, all `RootNamespace`s will be ignored.
     private getRootNamespace(json: any): string | undefined {
 
-        let propertyGroupNode: JsonNode = json?.Project?.PropertyGroup;
+        const propertyGroupNode: JsonNode = json?.Project?.PropertyGroup;
 
         if (!propertyGroupNode) { return; }
 
-        // NOTE: Currently if multiple `PropertyGroup` elements exist,
-        //          we just use the first one we find. This has been 
-        //          noted in the `README.md`, an issue has been filed,
-        //          and if enough interest is expressed, this will
-        //          be addressed.
-        if (Array.isArray(propertyGroupNode)) {
-            propertyGroupNode = propertyGroupNode[0];
+        let namespace: string | undefined;
+
+        if (!Array.isArray(propertyGroupNode)) {
+
+            namespace = propertyGroupNode.RootNamespace;
+
+            return namespace;
         }
 
-        const namespace: string | undefined = propertyGroupNode.RootNamespace;
+        for (let i = 0; i < propertyGroupNode.length; i++) {
+
+            if (!propertyGroupNode[i].RootNamespace) { continue; }
+
+            if (!namespace) {
+
+                namespace = propertyGroupNode[i].RootNamespace;
+
+                continue;
+            }
+
+            if (namespace !== propertyGroupNode[i].RootNamespace) {
+
+                namespace = undefined;
+            }
+        }
 
         return namespace;
     }
