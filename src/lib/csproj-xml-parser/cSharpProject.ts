@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import * as parser from 'fast-xml-parser';
 
 type KeyedString = { [k: string]: string; };
@@ -22,27 +21,9 @@ export class CSharpProject {
     public readonly projectReferences: string[];
     public readonly nugetPackageReferences: string[];
 
+    // If multiple `PropertyGroup` elements exist with different `RootNamespace`
+    //  values, all `RootNamespace`s will be ignored.
     private getRootNamespace(json: any): string | undefined {
-
-        let propertyGroupNode: JsonNode = json?.Project?.PropertyGroup;
-
-        if (!propertyGroupNode) { return; }
-
-        // NOTE: Currently if multiple `PropertyGroup` elements exist,
-        //          we just use the first one we find. This has been 
-        //          noted in the `README.md`, an issue has been filed,
-        //          and if enough interest is expressed, this will
-        //          be addressed.
-        if (Array.isArray(propertyGroupNode)) {
-            propertyGroupNode = propertyGroupNode[0];
-        }
-
-        const namespace: string | undefined = propertyGroupNode.RootNamespace;
-
-        return namespace;
-    }
-
-    private getRootNamespaceNewTestgetRootNamespace(json: any): string | undefined {
 
         const propertyGroupNode: JsonNode = json?.Project?.PropertyGroup;
 
@@ -70,13 +51,7 @@ export class CSharpProject {
 
             if (namespace !== propertyGroupNode[i].RootNamespace) {
 
-                const msg =
-                    'Multiple root namespaces were defined in the .csproj file.\n' +
-                    'Deferring to the name of the project as the root namespace.';
-
                 namespace = undefined;
-
-                vscode.window.showInformationMessage(msg);
             }
         }
 
