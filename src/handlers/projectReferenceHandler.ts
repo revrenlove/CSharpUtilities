@@ -10,14 +10,14 @@ import { TerminalHandler } from './terminalHandler';
 @injectable()
 export class ProjectReferenceHandler {
 
-    private readonly fileHandler: FileHandler;
+    // private readonly fileHandler: FileHandler;
     private readonly terminalHandler: TerminalHandler;
 
     constructor(
-        @inject(TYPES.fileHandler) fileHandler: FileHandler,
+        // @inject(TYPES.fileHandler) fileHandler: FileHandler,
         @inject(TYPES.terminalHandler) terminalHandler: TerminalHandler) {
 
-        this.fileHandler = fileHandler;
+        // this.fileHandler = fileHandler;
         this.terminalHandler = terminalHandler;
     }
 
@@ -51,20 +51,35 @@ export class ProjectReferenceHandler {
 
         const workspaceProjectPaths = workspaceProjectUris.map(u => u.fsPath);
 
-        const projectsToAdd: string[] = this.getProjectsToAdd(selectedProjectPaths, referencedProjectPaths);
+        const pathsOfProjectsToAdd: string[] = this.getPathsOfProjectsToAdd(selectedProjectPaths, referencedProjectPaths);
 
-        const projectsToRemove: string[] = this.getProjectsToRemove(selectedProjectPaths, referencedProjectPaths, workspaceProjectPaths);
+        const pathsOfProjectsToRemove: string[] = this.getPathsOfProjectsToRemove(selectedProjectPaths, referencedProjectPaths, workspaceProjectPaths);
 
         const directoryPath = path.dirname(contextualProjectUri.fsPath);
 
-        if (projectsToAdd.length > 0) {
+        const circularReferences = this.getCircularReferences(pathsOfProjectsToAdd, pathsOfProjectsToRemove);
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'add', projectsToAdd);
+        if (circularReferences) {
+
+            // TODO: The whole ok/cancel dialog should be built in... I should modularize this
+            // TODO: Magic strings are shitty. I know.
+            const circularReferenceWarningResult = await vscode.window.showWarningMessage("Test", ...['Ok', 'Cancel']);
+
+            if (circularReferenceWarningResult !== 'Ok') {
+
+                return;
+            }
+
         }
 
-        if (projectsToRemove.length > 0) {
+        if (pathsOfProjectsToAdd.length > 0) {
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'remove', projectsToRemove);
+            this.dotnetReferenceCommandHelper(directoryPath, 'add', pathsOfProjectsToAdd);
+        }
+
+        if (pathsOfProjectsToRemove.length > 0) {
+
+            this.dotnetReferenceCommandHelper(directoryPath, 'remove', pathsOfProjectsToRemove);
         }
 
         return;
@@ -126,31 +141,36 @@ export class ProjectReferenceHandler {
         return absolutePath;
     }
 
-    private getProjectsToAdd(
+    private getPathsOfProjectsToAdd(
         selectedProjectPaths: string[],
         referencedProjectPaths: string[]): string[] {
 
-        const projectsToAdd =
+        const pathsOfProjectsToAdd =
             selectedProjectPaths
                 .filter(p => !referencedProjectPaths.includes(p));
 
-        return projectsToAdd;
+        return pathsOfProjectsToAdd;
     }
 
-    private getProjectsToRemove(
+    private getPathsOfProjectsToRemove(
         selectedProjectPaths: string[],
         referencedProjectPaths: string[],
         workspaceProjectPaths: string[]): string[] {
 
-        const projectsToRemove =
+        const pathsOfProjectsToRemove =
             workspaceProjectPaths
                 .filter(p => referencedProjectPaths.includes(p))
                 .filter(p => !selectedProjectPaths.includes(p));
 
-        return projectsToRemove;
+        return pathsOfProjectsToRemove;
     }
 
-    private dotnetReferenceCommandHelper(directoryPath: string, dotnetCommand: string, projectPaths: string[]) {
+    private dotnetReferenceCommandHelper(
+        directoryPath: string,
+        dotnetCommand: string,
+        projectPaths: string[]): void {
+
+        // TODO: Get rid of the magic strings...
 
         this
             .terminalHandler
@@ -160,5 +180,15 @@ export class ProjectReferenceHandler {
                 dotnetCommand,
                 'reference',
                 ...projectPaths.map(p => `"${p}"`));
+    }
+
+    // TODO: Should we be using a string/msg[] as the return?
+    private getCircularReferences(
+        pathsOfProjectsToAdd: string[],
+        pathsOfProjectsToRemove: string[]): string[] | null {
+
+        const circularReferenceMessages: string[] = [];
+
+        return circularReferenceMessages;
     }
 }
