@@ -6,6 +6,7 @@ import { CsProjFile } from './csProjFile';
 import { inject, injectable } from 'inversify';
 import TYPES from '../types';
 import { TerminalHandler } from './terminalHandler';
+import { Util } from '../util';
 
 @injectable()
 export class ProjectReferenceHandler {
@@ -59,17 +60,11 @@ export class ProjectReferenceHandler {
 
         const circularReferences = this.getCircularReferences(pathsOfProjectsToAdd, pathsOfProjectsToRemove);
 
-        if (circularReferences) {
+        if (circularReferences.length > 0) {
 
-            // TODO: The whole ok/cancel dialog should be built in... I should modularize this
-            // TODO: Magic strings are shitty. I know.
-            const circularReferenceWarningResult = await vscode.window.showWarningMessage("Test", ...['Ok', 'Cancel']);
+            const msg = 'blahg blah blahg<br />blah blahg';
 
-            if (circularReferenceWarningResult !== 'Ok') {
-
-                return;
-            }
-
+            await Util.showWarningConfirm(msg);
         }
 
         if (pathsOfProjectsToAdd.length > 0) {
@@ -182,12 +177,14 @@ export class ProjectReferenceHandler {
                 ...projectPaths.map(p => `"${p}"`));
     }
 
-    // TODO: Should we be using a string/msg[] as the return?
     private getCircularReferences(
         pathsOfProjectsToAdd: string[],
-        pathsOfProjectsToRemove: string[]): string[] | null {
+        pathsOfProjectsToRemove: string[]): string[] {
 
         const circularReferenceMessages: string[] = [];
+
+        // TODO: Remove this...
+        circularReferenceMessages.push('howdy');
 
         return circularReferenceMessages;
     }

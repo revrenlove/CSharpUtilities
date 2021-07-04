@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
 
+enum ConfirmAction {
+
+    ok = 'Ok',
+    cancel = 'Cancel'
+}
+
 export class Util {
 
     public static capitalizeFirstLetter(s: string) {
@@ -13,10 +19,10 @@ export class Util {
 
     public static async showWarningConfirm(msg: string): Promise<boolean> {
 
-        const circularReferenceWarningResult = await vscode.window.showWarningMessage(msg, ...['Ok', 'Cancel']);
+        const result = await vscode.window.showWarningMessage(msg, ...[ConfirmAction.ok, ConfirmAction.cancel]);
 
-        // TODO: Actually write the fucking code.
+        const isOk = !!result && result === ConfirmAction.ok;
 
-        return true;
+        return isOk;
     }
 }
