@@ -1,16 +1,15 @@
 import { injectable } from 'inversify';
 import * as vscode from 'vscode';
-import { GenericTemplateHandler } from '../handlers/genericTemplateHandler';
 import { TemplateType } from '../templates/templateType';
-import { Command } from './command';
+import { AddTemplateCommand } from './addTemplateCommand';
 
 @injectable()
-export class AddEnumCommand implements Command {
+export class AddEnumCommand extends AddTemplateCommand {
 
     public readonly id: string = 'c-sharp-utilities.addEnum';
 
     public async execute(contextualUri: vscode.Uri): Promise<void> {
 
-        await GenericTemplateHandler.generate(TemplateType.enum, contextualUri);
+        await this.genericTemplateHandler.generate(TemplateType.enum, contextualUri);
     }
 }

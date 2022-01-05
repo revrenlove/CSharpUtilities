@@ -5,9 +5,9 @@ import TYPES from './types';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	const cmdManager = container.get<CommandManager>(TYPES.commandManager);
+	const commandManager = container.get<CommandManager>(TYPES.commandManager);
 
-	cmdManager.registerCommands(context);
+	commandManager.registerCommands(context);
 }
 
 export function deactivate() { }

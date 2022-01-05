@@ -1,20 +1,31 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as csprojXmlParser from '../lib/csproj-xml-parser';
-import { TextEncoder, TextDecoder } from 'util';
 import { Config } from '../config';
 import { ItemFileTemplate } from '../templates/itemFileTemplate';
 import { TemplateType } from "../templates/templateType";
 import { Util } from '../util';
+import { inject, injectable } from 'inversify';
+import TYPES from '../types';
+import { FileHandler } from './fileHandler';
+import { CSharpProjectFactory } from './cSharpProjectFactory';
 
+@injectable()
 export class GenericTemplateHandler {
 
-    // TODO: Use FileHandler instead of TextEncode/TextDecoder
-    private static readonly filenameRegex = new RegExp(`\\${path.sep}[^\\${path.sep}]+$`);
+    private readonly filenameRegex = new RegExp(`\\${path.sep}[^\\${path.sep}]+$`);
 
-    private static textDecoder = new TextDecoder();
+    private fileHandler: FileHandler;
+    private cSharpProjectFactory: CSharpProjectFactory;
 
-    public static async generate(templateType: TemplateType, contextualUri: vscode.Uri): Promise<void> {
+    public constructor(
+        @inject(TYPES.fileHandler) fileHandler: FileHandler,
+        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
+
+        this.fileHandler = fileHandler;
+        this.cSharpProjectFactory = cSharpProjectFactory;
+    }
+
+    public async generate(templateType: TemplateType, contextualUri: vscode.Uri): Promise<void> {
 
         let objectName = await this.getObjectName(templateType);
 
@@ -38,14 +49,16 @@ export class GenericTemplateHandler {
 
         const fileContentsString = await this.populateTemplate(template);
 
-        const fileContents = new TextEncoder().encode(fileContentsString);
+        // const fileContents = this.textEncoder.encode(fileContentsString);
 
-        await vscode.workspace.fs.writeFile(newFileUris[1], Uint8Array.from(fileContents));
+        // await vscode.workspace.fs.writeFile(newFileUris[1], Uint8Array.from(fileContents));
+
+        await this.fileHandler.writeFile(newFileUris[1], fileContentsString);
 
         await this.openEditor(newFileUris[1]);
     }
 
-    private static async getObjectName(templateType: TemplateType): Promise<string | undefined> {
+    private async getObjectName(templateType: TemplateType): Promise<string | undefined> {
 
         const templateTypeName = Util.capitalizeFirstLetter(TemplateType[templateType]);
 
@@ -63,7 +76,7 @@ export class GenericTemplateHandler {
         return objectName;
     }
 
-    private static sanitizeName(objectName: string): string {
+    private sanitizeName(objectName: string): string {
 
         const csExtRgx = /\.cs$/;
 
@@ -74,7 +87,7 @@ export class GenericTemplateHandler {
         return objectName;
     }
 
-    private static async getNewFileUris(contextualUri: vscode.Uri, objectName: string)
+    private async getNewFileUris(contextualUri: vscode.Uri, objectName: string)
         : Promise<[directory: vscode.Uri, file: vscode.Uri]> {
 
         let newFileDirectoryPath: string;
@@ -97,7 +110,7 @@ export class GenericTemplateHandler {
         return [newDirectoryUri, newFileUri];
     }
 
-    private static async isDuplicateFile(newFileUri: vscode.Uri): Promise<boolean> {
+    private async isDuplicateFile(newFileUri: vscode.Uri): Promise<boolean> {
 
         try {
             await vscode.workspace.fs.stat(newFileUri);
@@ -110,15 +123,15 @@ export class GenericTemplateHandler {
         }
     }
 
-    private static async getFullNamespace(contextualDirectoryUri: vscode.Uri): Promise<string> {
+    private async getFullNamespace(contextualDirectoryUri: vscode.Uri): Promise<string> {
 
         const projectFilePath = await this.getProjectFilePath(contextualDirectoryUri.fsPath);
 
         const projectFileUri = vscode.Uri.file(projectFilePath);
 
-        const csProject = await csprojXmlParser.parseFromFile(projectFileUri);
+        const cSharpProject = await this.cSharpProjectFactory.fromUri(projectFileUri);
 
-        let namespace = csProject.rootNamespace;
+        let namespace = cSharpProject.rootNamespace;
 
         const newFileDirectory = contextualDirectoryUri.fsPath;
 
@@ -141,7 +154,7 @@ export class GenericTemplateHandler {
         return namespace;
     }
 
-    private static async getProjectFilePath(directoryFsPath: string): Promise<string> {
+    private async getProjectFilePath(directoryFsPath: string): Promise<string> {
 
         let projectFilePath: string;
 
@@ -169,13 +182,11 @@ export class GenericTemplateHandler {
         return projectFilePath;
     }
 
-    private static async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
+    private async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
 
         const templateUri = vscode.Uri.file(Config.genericTemplatePath);
 
-        const templateFileContentsArray = await vscode.workspace.fs.readFile(templateUri);
-
-        let template = this.textDecoder.decode(templateFileContentsArray);
+        let template = await this.fileHandler.readFile(templateUri);
 
         for (const [placeholder, value] of Object.entries(templateValues)) {
 
@@ -187,7 +198,7 @@ export class GenericTemplateHandler {
         return template;
     }
 
-    private static async openEditor(uri: vscode.Uri): Promise<void> {
+    private async openEditor(uri: vscode.Uri): Promise<void> {
 
         const editor = await vscode.window.showTextDocument(uri);
 

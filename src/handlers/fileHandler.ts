@@ -8,8 +8,6 @@ export class FileHandler {
     private readonly textDecoder = new TextDecoder();
     private readonly textEncoder = new TextEncoder();
 
-    public constructor() { }
-
     public async readFile(uri: vscode.Uri): Promise<string> {
 
         const fileContentsArray = await vscode.workspace.fs.readFile(uri);
