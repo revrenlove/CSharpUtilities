@@ -64,14 +64,12 @@ export class ProjectReferenceHandler {
 
         const directoryPath = path.dirname(contextualProjectUri.fsPath);
 
-        const cSharpProject = await this.cSharpProjectFactory.fromUri(contextualProjectUri);
+        const rootTreeNode = await this.getRootTreeNode(contextualProject, pathsOfProjectsToAdd, pathsOfProjectsToRemove);
 
-        const hasCircularReferences = await this.hasCircularReferences(cSharpProject, pathsOfProjectsToAdd, pathsOfProjectsToRemove);
+        const hasCircularReferences = await this.hasCircularReferences(rootTreeNode);
 
         if (hasCircularReferences) {
-            // TODO: Figure out line break shit...
-            // TODO: I _think_ this means that br doesn't work?
-            const msg = 'blah blah blah<br />blah blah';
+            const msg = 'This will create circular dependencies. Are you sure you wish to continue?';
 
             if (!await Util.showWarningConfirm(msg)) {
                 return;
@@ -160,43 +158,46 @@ export class ProjectReferenceHandler {
     }
 
     // TODO: Eventually we need to display which projects are the culprits... That's a new ticket...
-    private async hasCircularReferences(
+    private async getRootTreeNode(
         project: CSharpProject,
         projectPathsToAdd: string[],
-        projectPathsToRemove: string[]): Promise<Boolean> {
+        projectPathsToRemove: string[]): Promise<TreeNode<string>> {
 
-        // let root = new TreeNode<CSharpProject>(project);
-
-        // let x = root.value.projectReferences.map(x => {
-        //     return 0;
-        // });
-
-        const referencePaths =
+        // if (projectPathsToAdd && projectPathsToRemove) {
+        project.projectReferencePaths =
             project
                 .projectReferencePaths
-                .filter(p => !projectPathsToRemove.includes(p))
-                .concat(projectPathsToAdd);
+                .concat(projectPathsToAdd)
+                .filter(x => projectPathsToRemove.indexOf(x) === -1);
+        // }
 
-        const root = new TreeNode<string>(project.path);
+        const rootNode = new TreeNode<string>(project.path);
 
-        root.children = referencePaths.map(p => new TreeNode<string>(p, root));
+        rootNode.children = project.projectReferencePaths.map(p => new TreeNode<string>(p, rootNode));
 
-        // do a while for tihs condition...
-        if (root.children.some(n => n.isCircular())) {
-            // TODO: Fille this out... or should it be a recursive f(x) just for shits/giggles
+        return rootNode;
+    }
+
+    private async hasCircularReferences(node: TreeNode<string>): Promise<Boolean> {
+
+        if (node.children.some(n => n.isCircular())) {
+            return true;
+        }
+
+        for (let i = 0; i < node.children.length; i++) {
+
+            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
+
+            node.children[i].children =
+                project
+                    .projectReferencePaths
+                    .map(p => new TreeNode<string>(p, node.children[i]));
+
+            if (await this.hasCircularReferences(node.children[i])) {
+                return true;
+            }
         }
 
         return false;
     }
-
-    // private async nodeFromPath(path: string): Promise<TreeNode<string>> {
-
-    //     const uri = vscode.Uri.file(path);
-
-    //     const cSharpProject = await CSharpProject.fromUri(uri);
-
-    //     const node = new TreeNode<string>(cSharpProject);
-
-    //     return node;
-    // }
 }

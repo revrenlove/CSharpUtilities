@@ -17,7 +17,7 @@ export class TreeNode<T> {
 
         while (parent !== undefined) {
 
-            if (parent === this) {
+            if (parent.value === this.value) {
                 return true;
             }
 
