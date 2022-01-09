@@ -1,6 +1,7 @@
 import 'reflect-metadata';
-import { Container } from 'inversify';
+import * as commands from './commands';
 import TYPES from './types';
+import { Container } from 'inversify';
 import { Command } from './commands/command';
 import { CommandManager } from './commands/commandManager';
 import { ManageProjectReferencesCommand } from './commands/manageProjectReferencesCommand';
@@ -8,7 +9,6 @@ import { ProjectReferenceHandler } from './handlers/projectReferenceHandler';
 import { FileHandler } from './handlers/fileHandler';
 import { TerminalHandler } from './handlers/terminalHandler';
 import { GenericTemplateHandler } from './handlers/genericTemplateHandler';
-import * as commands from './commands';
 import { CSharpProjectFactory } from './handlers/cSharpProjectFactory';
 
 const container = new Container();

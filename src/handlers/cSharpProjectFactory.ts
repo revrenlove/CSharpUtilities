@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as parser from 'fast-xml-parser';
-import { inject, injectable } from 'inversify';
 import TYPES from '../types';
+import { inject, injectable } from 'inversify';
 import { FileHandler } from './fileHandler';
 import { CSharpProject } from './cSharpProject';
 

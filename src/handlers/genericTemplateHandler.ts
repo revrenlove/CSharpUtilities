@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import TYPES from '../types';
 import { Config } from '../config';
 import { ItemFileTemplate } from '../templates/itemFileTemplate';
 import { TemplateType } from "../templates/templateType";
 import { Util } from '../util';
 import { inject, injectable } from 'inversify';
-import TYPES from '../types';
 import { FileHandler } from './fileHandler';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
 
@@ -48,10 +48,6 @@ export class GenericTemplateHandler {
         };
 
         const fileContentsString = await this.populateTemplate(template);
-
-        // const fileContents = this.textEncoder.encode(fileContentsString);
-
-        // await vscode.workspace.fs.writeFile(newFileUris[1], Uint8Array.from(fileContents));
 
         await this.fileHandler.writeFile(newFileUris[1], fileContentsString);
 

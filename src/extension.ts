@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { CommandManager } from './commands/commandManager';
 import container from './inversify.config';
 import TYPES from './types';
+import { CommandManager } from './commands/commandManager';
 
 export function activate(context: vscode.ExtensionContext) {
 

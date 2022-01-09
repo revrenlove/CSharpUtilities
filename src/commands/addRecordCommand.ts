@@ -1,5 +1,5 @@
-import { injectable } from 'inversify';
 import * as vscode from 'vscode';
+import { injectable } from 'inversify';
 import { TemplateType } from '../templates/templateType';
 import { AddTemplateCommand } from './addTemplateCommand';
 

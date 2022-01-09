@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import TYPES from '../types';
 import { CsProjFileQuickPickItem } from './csProjFileQuickPickItem';
 import { inject, injectable } from 'inversify';
-import TYPES from '../types';
 import { TerminalHandler } from './terminalHandler';
 import { Util } from '../util';
 import { TreeNode } from '../framework/treeNode';
@@ -35,7 +35,6 @@ export class ProjectReferenceHandler {
 
             const isSelected =
                 referencedProjectPaths
-                    // .map(x => this.relativePathToAbsolutePath(x, workspaceProjectUri.fsPath))
                     .some(referencedProjectPath => referencedProjectPath === workspaceProjectUri.fsPath);
 
             return this.uriToQuickPick(workspaceProjectUri, isSelected);
@@ -163,13 +162,11 @@ export class ProjectReferenceHandler {
         projectPathsToAdd: string[],
         projectPathsToRemove: string[]): Promise<TreeNode<string>> {
 
-        // if (projectPathsToAdd && projectPathsToRemove) {
         project.projectReferencePaths =
             project
                 .projectReferencePaths
                 .concat(projectPathsToAdd)
                 .filter(x => projectPathsToRemove.indexOf(x) === -1);
-        // }
 
         const rootNode = new TreeNode<string>(project.path);
 
