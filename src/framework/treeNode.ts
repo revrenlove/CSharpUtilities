@@ -1,17 +1,21 @@
-// This is my attempt at looking like a comp-sci grad or something...
-//  ... probably poorly...
-export class TreeNode<T> {
+import { Md5 } from 'ts-md5/dist/md5';
 
-    constructor(value: T, parent?: TreeNode<T>) {
+export class TreeNode {
+
+    private readonly valueHash: string;
+
+    constructor(value: NonNullable<any>, parent?: TreeNode) {
 
         this.value = value;
         this.parent = parent;
         this.children = [];
+
+        this.valueHash = Md5.hashStr(JSON.stringify(this.value));
     }
 
-    public value: T;
-    public children: TreeNode<T>[];
-    public parent: TreeNode<T> | undefined;
+    public value: NonNullable<any>;
+    public children: TreeNode[];
+    public parent: TreeNode | undefined;
 
     public isCircular(): Boolean {
 
@@ -19,7 +23,7 @@ export class TreeNode<T> {
 
         while (parent !== undefined) {
 
-            if (parent.value === this.value) {
+            if (parent.valueHash === this.valueHash) {
                 return true;
             }
 

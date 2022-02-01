@@ -160,7 +160,7 @@ export class ProjectReferenceHandler {
     private async getRootTreeNode(
         project: CSharpProject,
         projectPathsToAdd: string[],
-        projectPathsToRemove: string[]): Promise<TreeNode<string>> {
+        projectPathsToRemove: string[]): Promise<TreeNode> {
 
         project.projectReferencePaths =
             project
@@ -168,14 +168,14 @@ export class ProjectReferenceHandler {
                 .concat(projectPathsToAdd)
                 .filter(x => projectPathsToRemove.indexOf(x) === -1);
 
-        const rootNode = new TreeNode<string>(project.path);
+        const rootNode = new TreeNode(project.path);
 
-        rootNode.children = project.projectReferencePaths.map(p => new TreeNode<string>(p, rootNode));
+        rootNode.children = project.projectReferencePaths.map(p => new TreeNode(p, rootNode));
 
         return rootNode;
     }
 
-    private async hasCircularReferences(node: TreeNode<string>): Promise<Boolean> {
+    private async hasCircularReferences(node: TreeNode): Promise<Boolean> {
 
         if (node.children.some(n => n.isCircular())) {
             return true;
@@ -188,7 +188,7 @@ export class ProjectReferenceHandler {
             node.children[i].children =
                 project
                     .projectReferencePaths
-                    .map(p => new TreeNode<string>(p, node.children[i]));
+                    .map(p => new TreeNode(p, node.children[i]));
 
             if (await this.hasCircularReferences(node.children[i])) {
                 return true;
