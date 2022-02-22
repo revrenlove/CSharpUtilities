@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { injectable, multiInject } from "inversify";
 import TYPES from "../types";
+import { injectable, multiInject } from "inversify";
 import { Command } from "./command";
 
 @injectable()

@@ -1,7 +1,7 @@
-import { inject, injectable } from 'inversify';
 import * as vscode from 'vscode';
-import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import TYPES from '../types';
+import { inject, injectable } from 'inversify';
+import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import { Command } from './command';
 
 @injectable()

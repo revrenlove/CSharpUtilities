@@ -1,33 +1,37 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as csprojXmlParser from '../lib/csproj-xml-parser';
-import { FileHandler } from './fileHandler';
-import { CsProjFile } from './csProjFile';
-import { inject, injectable } from 'inversify';
 import TYPES from '../types';
+import { CsProjFileQuickPickItem } from './csProjFileQuickPickItem';
+import { inject, injectable } from 'inversify';
 import { TerminalHandler } from './terminalHandler';
+import { Util } from '../util';
+import { TreeNode } from '../framework/treeNode';
+import { CSharpProject } from './cSharpProject';
+import { CSharpProjectFactory } from './cSharpProjectFactory';
 
 @injectable()
 export class ProjectReferenceHandler {
 
-    private readonly fileHandler: FileHandler;
     private readonly terminalHandler: TerminalHandler;
+    private readonly cSharpProjectFactory: CSharpProjectFactory;
 
-    constructor(
-        @inject(TYPES.fileHandler) fileHandler: FileHandler,
-        @inject(TYPES.terminalHandler) terminalHandler: TerminalHandler) {
+    public constructor(
+        @inject(TYPES.terminalHandler) terminalHandler: TerminalHandler,
+        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
 
-        this.fileHandler = fileHandler;
         this.terminalHandler = terminalHandler;
+        this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
     public async handleReferences(contextualProjectUri: vscode.Uri): Promise<void> {
 
+        const contextualProject = await this.cSharpProjectFactory.fromUri(contextualProjectUri);
+
         const workspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
 
-        const referencedProjectPaths = await this.getReferencedProjectPaths(contextualProjectUri);
+        const referencedProjectPaths = contextualProject.projectReferencePaths;
 
-        const items = workspaceProjectUris.map(workspaceProjectUri => {
+        const quickPickItems = workspaceProjectUris.map(workspaceProjectUri => {
 
             const isSelected =
                 referencedProjectPaths
@@ -36,35 +40,49 @@ export class ProjectReferenceHandler {
             return this.uriToQuickPick(workspaceProjectUri, isSelected);
         });
 
-        const options: vscode.QuickPickOptions & { canPickMany: true } = {
+        const quickPickOptions: vscode.QuickPickOptions & { canPickMany: true } = {
             "canPickMany": true,
             "matchOnDetail": true,
             "placeHolder": 'Search for project...'
         };
 
-        const selectedProjects = await vscode.window.showQuickPick<CsProjFile>(items, options);
+        const selectedProjects = await vscode.window.showQuickPick<CsProjFileQuickPickItem>(quickPickItems, quickPickOptions);
 
         // Menu was closed
-        if (!selectedProjects) { return; }
+        if (!selectedProjects) {
+            return;
+        }
 
         const selectedProjectPaths = selectedProjects.map(p => p.uri.fsPath);
 
         const workspaceProjectPaths = workspaceProjectUris.map(u => u.fsPath);
 
-        const projectsToAdd: string[] = this.getProjectsToAdd(selectedProjectPaths, referencedProjectPaths);
+        const pathsOfProjectsToAdd: string[] = this.getPathsOfProjectsToAdd(selectedProjectPaths, referencedProjectPaths);
 
-        const projectsToRemove: string[] = this.getProjectsToRemove(selectedProjectPaths, referencedProjectPaths, workspaceProjectPaths);
+        const pathsOfProjectsToRemove: string[] = this.getPathsOfProjectsToRemove(selectedProjectPaths, referencedProjectPaths, workspaceProjectPaths);
 
         const directoryPath = path.dirname(contextualProjectUri.fsPath);
 
-        if (projectsToAdd.length > 0) {
+        const rootTreeNode = await this.getRootTreeNode(contextualProject, pathsOfProjectsToAdd, pathsOfProjectsToRemove);
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'add', projectsToAdd);
+        const hasCircularReferences = await this.hasCircularReferences(rootTreeNode);
+
+        if (hasCircularReferences) {
+            const msg = 'This will create circular dependencies. Are you sure you wish to continue?';
+
+            if (!await Util.showWarningConfirm(msg)) {
+                return;
+            };
         }
 
-        if (projectsToRemove.length > 0) {
+        if (pathsOfProjectsToAdd.length > 0) {
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'remove', projectsToRemove);
+            this.dotnetReferenceCommandHelper(directoryPath, 'add', pathsOfProjectsToAdd);
+        }
+
+        if (pathsOfProjectsToRemove.length > 0) {
+
+            this.dotnetReferenceCommandHelper(directoryPath, 'remove', pathsOfProjectsToRemove);
         }
 
         return;
@@ -81,28 +99,11 @@ export class ProjectReferenceHandler {
         return workspaceProjectUris;
     }
 
-    private async getReferencedProjectPaths(projectUri: vscode.Uri): Promise<string[]> {
-
-        const cSharpProject = await csprojXmlParser.parseFromFile(projectUri);
-
-        const absolutePaths =
-            cSharpProject
-                .projectReferences
-                .map(p => {
-
-                    const absolutePath = this.relativePathToAbsolutePath(p, projectUri.fsPath);
-
-                    return absolutePath;
-                });
-
-        return absolutePaths;
-    }
-
-    private uriToQuickPick(uri: vscode.Uri, picked: boolean = false): CsProjFile {
+    private uriToQuickPick(uri: vscode.Uri, picked: boolean = false): CsProjFileQuickPickItem {
 
         const label = path.parse(uri.fsPath).name;
 
-        const quickPickItem: CsProjFile = {
+        const quickPickItem: CsProjFileQuickPickItem = {
             label: label,
             detail: uri.fsPath,
             picked: picked,
@@ -113,52 +114,87 @@ export class ProjectReferenceHandler {
         return quickPickItem;
     }
 
-    private relativePathToAbsolutePath(relativePath: string, projectPath: string): string {
-
-        // dotnet project references use windows-style slashes.
-        // This normalizes to the platform.
-        relativePath = relativePath.replace(/\\/g, path.sep);
-
-        const projectDirectoryPath = path.dirname(projectPath);
-
-        const absolutePath = path.resolve(projectDirectoryPath, relativePath);
-
-        return absolutePath;
-    }
-
-    private getProjectsToAdd(
+    private getPathsOfProjectsToAdd(
         selectedProjectPaths: string[],
         referencedProjectPaths: string[]): string[] {
 
-        const projectsToAdd =
+        const pathsOfProjectsToAdd =
             selectedProjectPaths
                 .filter(p => !referencedProjectPaths.includes(p));
 
-        return projectsToAdd;
+        return pathsOfProjectsToAdd;
     }
 
-    private getProjectsToRemove(
+    private getPathsOfProjectsToRemove(
         selectedProjectPaths: string[],
         referencedProjectPaths: string[],
         workspaceProjectPaths: string[]): string[] {
 
-        const projectsToRemove =
+        const pathsOfProjectsToRemove =
             workspaceProjectPaths
                 .filter(p => referencedProjectPaths.includes(p))
                 .filter(p => !selectedProjectPaths.includes(p));
 
-        return projectsToRemove;
+        return pathsOfProjectsToRemove;
     }
 
-    private dotnetReferenceCommandHelper(directoryPath: string, dotnetCommand: string, projectPaths: string[]) {
+    private dotnetReferenceCommandHelper(
+        directoryPath: string,
+        dotnetCommand: string,
+        projectPaths: string[]): void {
+
+        const command = 'dotnet';
+        const param = 'reference';
 
         this
             .terminalHandler
             .executeCommand(
                 directoryPath,
-                'dotnet',
+                command,
                 dotnetCommand,
-                'reference',
+                param,
                 ...projectPaths.map(p => `"${p}"`));
+    }
+
+    // TODO: Eventually we need to display which projects are the culprits... That's a new ticket...
+    private async getRootTreeNode(
+        project: CSharpProject,
+        projectPathsToAdd: string[],
+        projectPathsToRemove: string[]): Promise<TreeNode> {
+
+        project.projectReferencePaths =
+            project
+                .projectReferencePaths
+                .concat(projectPathsToAdd)
+                .filter(x => projectPathsToRemove.indexOf(x) === -1);
+
+        const rootNode = new TreeNode(project.path);
+
+        rootNode.children = project.projectReferencePaths.map(p => new TreeNode(p, rootNode));
+
+        return rootNode;
+    }
+
+    private async hasCircularReferences(node: TreeNode): Promise<Boolean> {
+
+        if (node.children.some(n => n.isCircular())) {
+            return true;
+        }
+
+        for (let i = 0; i < node.children.length; i++) {
+
+            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
+
+            node.children[i].children =
+                project
+                    .projectReferencePaths
+                    .map(p => new TreeNode(p, node.children[i]));
+
+            if (await this.hasCircularReferences(node.children[i])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

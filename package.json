@@ -141,6 +141,7 @@
 		"fast-xml-parser": "^3.19.0",
 		"inversify": "^5.0.5",
 		"reflect-metadata": "^0.1.13",
+		"ts-md5": "^1.2.11",
 		"util": "^0.12.3"
 	}
 }

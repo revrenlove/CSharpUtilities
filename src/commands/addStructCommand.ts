@@ -1,16 +1,15 @@
-import { injectable } from 'inversify';
 import * as vscode from 'vscode';
-import { GenericTemplateHandler } from '../handlers/genericTemplateHandler';
+import { injectable } from 'inversify';
 import { TemplateType } from '../templates/templateType';
-import { Command } from './command';
+import { AddTemplateCommand } from './addTemplateCommand';
 
 @injectable()
-export class AddStructCommand implements Command {
+export class AddStructCommand extends AddTemplateCommand {
 
     public readonly id: string = 'c-sharp-utilities.addStruct';
 
     public async execute(contextualUri: vscode.Uri): Promise<void> {
 
-        await GenericTemplateHandler.generate(TemplateType.struct, contextualUri);
+        await this.genericTemplateHandler.generate(TemplateType.struct, contextualUri);
     }
 }

@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
-import { TextDecoder, TextEncoder } from 'util';
 import { injectable } from 'inversify';
+import { TextDecoder, TextEncoder } from 'util';
 
 @injectable()
 export class FileHandler {
 
     private readonly textDecoder = new TextDecoder();
     private readonly textEncoder = new TextEncoder();
-
-    public constructor() { }
 
     public async readFile(uri: vscode.Uri): Promise<string> {
 
