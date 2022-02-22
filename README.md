@@ -34,7 +34,7 @@ Currently the following types of items are supported:
 
   - If multiple `PropertyGroup` elements exist in the `.csproj` file with differing `RootNamespace` values, it will defer to the project name.
 
-![Adding a New Item](./assets/images/add-item.gif)
+![Adding a New Item](./assets/images/dox-add-item.gif)
 
 ### Manage Project References
 
@@ -42,11 +42,11 @@ Right-clicking a `.csproj` file gives your the option to "Manage Project Referen
 
 Simply check the projects you wish to reference and uncheck the ones you don't.
 
-![Adding a New Item](./assets/images/project-ref-demo.gif)
+![Adding a New Item](./assets/images/dox-manage-ref.gif)
 
 #### **Note: When Managing Project References**
 
-- `dotnet` _does_ allow for circular project references... So... watch out for that, because many times, the whole thing will still build fine. This extension _may_ support checking for that in the future.
+- `dotnet` _does_ allow for circular project references... So... This extension will warn you if you are adding a reference that results in a circular reference.
 
 - This feature does not manually edit the `.csproj` file - it actually executes the commands in an integrated terminal instance. So, if things do not go as you expect, check your integrated terminal named `dotnet` for any weirdness, and, please, feel free to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
