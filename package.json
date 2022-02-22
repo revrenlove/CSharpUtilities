@@ -16,7 +16,7 @@
 	"publisher": "revrenlove",
 	"version": "0.3.2",
 	"engines": {
-		"vscode": "^1.55.0"
+		"vscode": "^1.63.0"
 	},
 	"bugs": {
 		"url": "https://github.com/revrenlove/CSharpUtilities/issues"
@@ -27,7 +27,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./dist/extension.js",
+	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -114,26 +114,28 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"package": "webpack --mode production --devtool hidden-source-map",
-		"lint": "eslint src --ext ts"
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./ && npm run copy-static",
+		"watch": "npm run copy-static && tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.55.0",
-		"@typescript-eslint/eslint-plugin": "^4.14.1",
-		"@typescript-eslint/parser": "^4.14.1",
-		"copy-webpack-plugin": "^8.1.1",
-		"eslint": "^7.19.0",
-		"glob": "^7.1.6",
-		"ts-loader": "^8.0.14",
-		"typescript": "^4.1.3",
-		"vsce": "^1.88.0",
-		"webpack": "^5.19.0",
-		"webpack-cli": "^4.4.0"
+		"@types/glob": "^7.1.4",
+		"@types/mocha": "^9.0.0",
+		"@types/node": "14.x",
+		"@types/vscode": "^1.63.0",
+		"@typescript-eslint/eslint-plugin": "^5.1.0",
+		"@typescript-eslint/parser": "^5.1.0",
+		"@vscode/test-electron": "^1.6.2",
+		"copyfiles": "^2.4.1",
+		"eslint": "^8.1.0",
+		"glob": "^7.1.7",
+		"mocha": "^9.1.3",
+		"typescript": "^4.4.4",
+		"vsce": "^1.88.0"
 	},
 	"dependencies": {
 		"fast-xml-parser": "^3.19.0",
