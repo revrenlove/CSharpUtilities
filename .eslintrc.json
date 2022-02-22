@@ -19,6 +19,7 @@
         "prefer-const": "warn"
     },
     "ignorePatterns": [
+        "out",
         "**/*.d.ts"
     ]
 }
