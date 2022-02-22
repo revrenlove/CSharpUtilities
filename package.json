@@ -116,7 +116,7 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./ && npm run copy-static",
-		"watch": "tsc -watch -p ./ && npm run copy-static",
+		"watch": "npm run copy-static && tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",
