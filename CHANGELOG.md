@@ -2,11 +2,11 @@
 
 ## [0.4.0]
 
-- Automating extension publishing
+- Automating extension publishing.
 
 ## [0.3.2] - 2021/05/15
 
-- Accounts for possibility of multiple `RootNamespace` elements
+- Accounts for possibility of multiple `RootNamespace` elements.
 
 ## [0.2.0] - 2021/05/09
 
