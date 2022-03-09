@@ -46,3 +46,8 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run compile
+
+      - name: Publish
+        run: npm run deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}

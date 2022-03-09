@@ -120,7 +120,8 @@
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",
-		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out"
+		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
+		"deploy": "vsce publish"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",
