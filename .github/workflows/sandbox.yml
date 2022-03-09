@@ -50,4 +50,4 @@ jobs:
       - name: Publish
         run: npm run deploy
         env:
-          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
