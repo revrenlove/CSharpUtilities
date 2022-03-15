@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as parser from 'fast-xml-parser';
 import TYPES from '../types';
+import { XMLParser } from 'fast-xml-parser';
 import { inject, injectable } from 'inversify';
 import { FileHandler } from './fileHandler';
 import { CSharpProject } from './cSharpProject';
@@ -16,10 +16,12 @@ type JsonNode = KeyValuePair[] | KeyValuePair | undefined;
 export class CSharpProjectFactory {
 
     private fileHandler: FileHandler;
+    private parser: XMLParser;
 
     public constructor(@inject(TYPES.fileHandler) fileHandler: FileHandler) {
 
         this.fileHandler = fileHandler;
+        this.parser = new XMLParser({ ignoreAttributes: false });
     }
 
     public async fromUri(uri: vscode.Uri): Promise<CSharpProject> {
@@ -28,7 +30,7 @@ export class CSharpProjectFactory {
 
         const fileContents = await this.fileHandler.readFile(uri);
 
-        const json = parser.parse(fileContents, { ignoreAttributes: false });
+        const json = this.parser.parse(fileContents);
 
         const rootNamespace = this.getRootNamespace(json) ?? projectName;
 
