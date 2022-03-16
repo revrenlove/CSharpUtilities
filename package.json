@@ -121,7 +121,7 @@
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",
 		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
-		"deploy": "vsce publish --pre-release"
+		"deploy": "vsce publish"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.2.0",
