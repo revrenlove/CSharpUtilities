@@ -16,7 +16,7 @@
 	"publisher": "revrenlove",
 	"version": "0.7.2",
 	"engines": {
-		"vscode": "^1.63.0"
+		"vscode": "^1.65.0"
 	},
 	"bugs": {
 		"url": "https://github.com/revrenlove/CSharpUtilities/issues"
