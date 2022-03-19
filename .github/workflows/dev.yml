@@ -48,6 +48,6 @@ jobs:
       - run: npm run compile
 
       - name: Publish
-        run: npm run deploy --pre-release
+        run: npm run deploy -- --pre-release
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
