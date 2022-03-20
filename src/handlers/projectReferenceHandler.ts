@@ -70,9 +70,11 @@ export class ProjectReferenceHandler {
         if (hasCircularReferences) {
             const msg = 'This will create circular dependencies. Are you sure you wish to continue?';
 
-            if (!await Util.showWarningConfirm(msg)) {
-                return;
-            };
+            // if (!await Util.showWarningConfirm(msg)) {
+            //     return;
+            // };
+
+            await vscode.window.showErrorMessage(msg);
         }
 
         if (pathsOfProjectsToAdd.length > 0) {
@@ -175,26 +177,35 @@ export class ProjectReferenceHandler {
         return rootNode;
     }
 
-    private async hasCircularReferences(node: TreeNode): Promise<Boolean> {
+    private async hasCircularReferences(node: TreeNode): Promise<Array<String>> {
 
-        if (node.children.some(n => n.isCircular())) {
-            return true;
+        const circularReferences = node.children.filter(n => n.isCircular());
+
+        if (circularReferences.length > 0) {
+            circularReferences.forEach(async n => {
+                const msg = `Node: ${node.value} - Child: ${n.value}`;
+                await vscode.window.showInformationMessage(msg);
+                console.debug(msg);
+            });
+
+            const x = circularReferences.map(q => q.value as String);
+
+            return x;
         }
 
-        for (let i = 0; i < node.children.length; i++) {
+        node.children.forEach(async child => {
+            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(child.value));
 
-            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
-
-            node.children[i].children =
+            child.children =
                 project
                     .projectReferencePaths
-                    .map(p => new TreeNode(p, node.children[i]));
+                    .map(p => new TreeNode(p, child));
 
-            if (await this.hasCircularReferences(node.children[i])) {
+            if (await this.hasCircularReferences(child)) {
                 return true;
             }
-        }
+        });
 
-        return false;
+        return [];
     }
 }
