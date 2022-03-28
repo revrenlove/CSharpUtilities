@@ -1,0 +1,55 @@
+name: Main Release
+
+on:
+  push:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          
+      - name: 'package.json PRE'
+        run: cat ./package.json
+
+      - name: Version Bump
+        id: version-bump
+        uses: 'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: minor
+          
+      - name: 'package.json POST'
+        run: cat ./package.json
+
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm i
+      - run: npm run compile
+
+      - name: Publish
+        run: npm run deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Merge main into dev
+        run: |
+          git merge main -m "Minor: Merging main back into dev"
+          git push
