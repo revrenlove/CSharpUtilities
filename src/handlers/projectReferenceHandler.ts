@@ -68,11 +68,12 @@ export class ProjectReferenceHandler {
         const hasCircularReferences = await this.hasCircularReferences(rootTreeNode);
 
         if (hasCircularReferences) {
-            const msg = 'This will create circular dependencies. Are you sure you wish to continue?';
 
-            if (!await Util.showWarningConfirm(msg)) {
-                return;
-            };
+            const msg = 'This would create circular dependencies. Operation cancelled.';
+
+            await vscode.window.showErrorMessage(msg);
+
+            return;
         }
 
         if (pathsOfProjectsToAdd.length > 0) {
