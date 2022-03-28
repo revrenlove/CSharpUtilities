@@ -68,13 +68,12 @@ export class ProjectReferenceHandler {
         const hasCircularReferences = await this.hasCircularReferences(rootTreeNode);
 
         if (hasCircularReferences) {
-            const msg = 'This will create circular dependencies. Are you sure you wish to continue?';
 
-            // if (!await Util.showWarningConfirm(msg)) {
-            //     return;
-            // };
+            const msg = 'This would create circular dependencies. Operation cancelled.';
 
             await vscode.window.showErrorMessage(msg);
+
+            return;
         }
 
         if (pathsOfProjectsToAdd.length > 0) {
@@ -177,35 +176,26 @@ export class ProjectReferenceHandler {
         return rootNode;
     }
 
-    private async hasCircularReferences(node: TreeNode): Promise<Array<String>> {
+    private async hasCircularReferences(node: TreeNode): Promise<Boolean> {
 
-        const circularReferences = node.children.filter(n => n.isCircular());
-
-        if (circularReferences.length > 0) {
-            circularReferences.forEach(async n => {
-                const msg = `Node: ${node.value} - Child: ${n.value}`;
-                await vscode.window.showInformationMessage(msg);
-                console.debug(msg);
-            });
-
-            const x = circularReferences.map(q => q.value as String);
-
-            return x;
+        if (node.children.some(n => n.isCircular())) {
+            return true;
         }
 
-        node.children.forEach(async child => {
-            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(child.value));
+        for (let i = 0; i < node.children.length; i++) {
 
-            child.children =
+            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
+
+            node.children[i].children =
                 project
                     .projectReferencePaths
-                    .map(p => new TreeNode(p, child));
+                    .map(p => new TreeNode(p, node.children[i]));
 
-            if (await this.hasCircularReferences(child)) {
+            if (await this.hasCircularReferences(node.children[i])) {
                 return true;
             }
-        });
+        }
 
-        return [];
+        return false;
     }
 }
