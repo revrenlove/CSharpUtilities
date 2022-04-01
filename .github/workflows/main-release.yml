@@ -28,28 +28,41 @@ jobs:
       - name: 'package.json POST'
         run: cat ./package.json
 
-      # - name: Use Node
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: 16.x
-      #     cache: 'npm'
-      # - run: npm i
-      # - run: npm run compile
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm i
+      - run: npm run esbuild-base
 
-      # - name: Publish
-      #   run: npm run deploy
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
 
-  # merge:
-  #   runs-on: ubuntu-latest
+      - name: Package
+        id: package
+        run: npm run package
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         ref: dev
+      - name: Create Release
+        run: gh release create v${{ steps.package-version.outputs.current-version}} --target main -F CHANGELOG.md ./*.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Merge main into dev
-  #       run: |
-  #         git merge main -m "Add: Merging main back into dev"
-  #         git push
+      - name: Publish
+        run: npm run deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Merge main into dev
+        run: |
+          git merge main -m "Add: Merging main back into dev"
+          git push
