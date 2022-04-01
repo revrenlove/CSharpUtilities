@@ -33,7 +33,7 @@ jobs:
           node-version: 16.x
           cache: 'npm'
       - run: npm i
-      - run: npm run compile
+      - run: npm run esbuild-base
 
       - name: get-npm-version
         id: package-version
