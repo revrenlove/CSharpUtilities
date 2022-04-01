@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "0.7.14",
+	"version": "0.7.23",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
@@ -27,7 +27,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./out/extension.js",
+	"main": "./out/main.js",
 	"contributes": {
 		"commands": [
 			{
@@ -114,12 +114,12 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./ && npm run copy-static",
-		"watch": "npm run copy-static && tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
+		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node && npm run copy-static",
+		"esbuild": "npm run esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+		"test-compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js",
 		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
 		"deploy": "vsce publish",
 		"package": "vsce package"
@@ -133,6 +133,7 @@
 		"@typescript-eslint/parser": "^5.14.0",
 		"@vscode/test-electron": "^2.1.3",
 		"copyfiles": "^2.4.1",
+		"esbuild": "^0.14.29",
 		"eslint": "^8.10.0",
 		"glob": "^7.2.0",
 		"mocha": "^9.2.1",
