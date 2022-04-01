@@ -27,15 +27,22 @@ jobs:
       - name: 'package.json POST'
         run: cat ./package.json
 
-      - name: Use Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: 'npm'
-      - run: npm i
-      - run: npm run compile
+      # - name: Use Node
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 16.x
+      #     cache: 'npm'
+      # - run: npm i
+      # - run: npm run compile
 
-      - name: Publish
-        run: npm run deploy -- --pre-release
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - name: Echo current version
+        run: echo ${{ steps.package-version.outputs.current-version}}
+
+      # - name: Publish
+      #   run: npm run deploy -- --pre-release
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
