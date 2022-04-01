@@ -35,7 +35,22 @@ jobs:
       - run: npm i
       - run: npm run compile
 
-      - name: Publish
-        run: npm run deploy -- --pre-release
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      # We can delete this after testing...
+      - name: Echo current version
+        run: echo ${{ steps.package-version.outputs.current-version}}
+
+      - name: Create Release
+        run: gh release create v${{ steps.package-version.outputs.current-version}} --target dev -p -F CHANGELOG.md
+
+      - name: Package
+        id: package
+        run: npm run package -- --pre-release
+
+      # - name: Publish
+      #   run: npm run deploy -- --pre-release
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}

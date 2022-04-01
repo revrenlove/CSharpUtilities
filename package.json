@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "0.7.9",
+	"version": "0.7.11",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
@@ -121,7 +121,8 @@
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",
 		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
-		"deploy": "vsce publish"
+		"deploy": "vsce publish",
+		"package": "vsce package"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.2.0",
