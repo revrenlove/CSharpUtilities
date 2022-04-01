@@ -45,6 +45,8 @@ jobs:
 
       - name: Create Release
         run: gh release create v${{ steps.package-version.outputs.current-version}} --target dev -p -F CHANGELOG.md ./*.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package
         id: package
