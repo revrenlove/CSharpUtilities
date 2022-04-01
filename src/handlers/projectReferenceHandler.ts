@@ -27,11 +27,19 @@ export class ProjectReferenceHandler {
 
         const contextualProject = await this.cSharpProjectFactory.fromUri(contextualProjectUri);
 
-        const workspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
+        const otherWorkspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
+
+        // TODO: Disable even having this option when this is the case in the future...
+        if (otherWorkspaceProjectUris.length === 0) {
+
+            await vscode.window.showInformationMessage('No other projects found in workspace.');
+
+            return;
+        }
 
         const referencedProjectPaths = contextualProject.projectReferencePaths;
 
-        const quickPickItems = workspaceProjectUris.map(workspaceProjectUri => {
+        const quickPickItems = otherWorkspaceProjectUris.map(workspaceProjectUri => {
 
             const isSelected =
                 referencedProjectPaths
@@ -55,7 +63,7 @@ export class ProjectReferenceHandler {
 
         const selectedProjectPaths = selectedProjects.map(p => p.uri.fsPath);
 
-        const workspaceProjectPaths = workspaceProjectUris.map(u => u.fsPath);
+        const workspaceProjectPaths = otherWorkspaceProjectUris.map(u => u.fsPath);
 
         const pathsOfProjectsToAdd: string[] = this.getPathsOfProjectsToAdd(selectedProjectPaths, referencedProjectPaths);
 
