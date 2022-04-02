@@ -62,6 +62,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: main
+          
+      - uses: actions/checkout@v3
+        with:
           ref: dev
 
       - name: Merge main into dev
