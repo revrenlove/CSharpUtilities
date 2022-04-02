@@ -57,6 +57,7 @@ jobs:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   merge:
+    needs: release
     runs-on: ubuntu-latest
 
     steps:
@@ -70,5 +71,5 @@ jobs:
 
       - name: Merge main into dev
         run: |
-          git merge main -m "Minor: Merging main back into dev"
+          git merge origin/main -m "Minor: Merging main back into dev"
           git push
