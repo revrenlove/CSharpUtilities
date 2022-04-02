@@ -23,7 +23,9 @@ jobs:
         uses: 'phips28/gh-action-bump-version@master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: add
+        with:
+          minor-wording: 'minor,Minor,MINOR'
+          major-wording: 'major,Major,MAJOR'
           
       - name: 'package.json POST'
         run: cat ./package.json
@@ -64,5 +66,5 @@ jobs:
 
       - name: Merge main into dev
         run: |
-          git merge main -m "Add: Merging main back into dev"
+          git merge main -m "Minor: Merging main back into dev"
           git push
