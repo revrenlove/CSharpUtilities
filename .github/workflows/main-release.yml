@@ -11,9 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: GH_TOKEN
+        if: env.GH_TOKEN == ''
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+          token: ${{ env.GH_TOKEN }}
 
       - name: get-npm-version pre
         id: package-version-pre
@@ -68,9 +75,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: GH_TOKEN
+        if: env.GH_TOKEN == ''
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v3
         with:
           ref: main
+          token: ${{ env.GH_TOKEN }}
 
       - name: Merge main into dev
         uses: devmasx/merge-branch@master
