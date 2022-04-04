@@ -16,11 +16,11 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: get-npm-version pre
-        id: package-version
+        id: package-version-pre
         uses: martinbeentjes/npm-get-version-action@master
           
       - name: Version Pre
-        run: echo ${{ steps.package-version.outputs.current-version}}
+        run: echo ${{ steps.package-version-pre.outputs.current-version}}
 
       - name: Version Bump
         id: version-bump
@@ -34,11 +34,11 @@ jobs:
           default: minor
 
       - name: get-npm-version post
-        id: package-version
+        id: package-version-post
         uses: martinbeentjes/npm-get-version-action@master
 
       - name: Version Post
-        run: echo ${{ steps.package-version.outputs.current-version}}
+        run: echo ${{ steps.package-version-post.outputs.current-version}}
 
       # - name: Use Node
       #   uses: actions/setup-node@v2
