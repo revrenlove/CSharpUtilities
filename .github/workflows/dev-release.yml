@@ -15,7 +15,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: get-npm-version Post
+      - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
           
