@@ -15,8 +15,10 @@ jobs:
         with:
           ref: ${{ github.ref }}
           
-      - name: 'package.json PRE'
-        run: cat ./package.json
+      - name: get-npm-version Pre
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+        run: echo ${{ steps.package-version.outputs.current-version}}
 
       - name: Version Bump
         id: version-bump
@@ -28,35 +30,33 @@ jobs:
           major-wording: 'major,Major,MAJOR'
           patch-wording:  'patch,fixes'
           default: minor
-          
-      - name: 'package.json POST'
-        run: cat ./package.json
 
-      - name: Use Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: 'npm'
-      - run: npm i
-      - run: npm run esbuild-base
-
-      - name: get-npm-version
+      - name: get-npm-version Post
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
+        run: echo ${{ steps.package-version.outputs.current-version}}
 
-      - name: Package
-        id: package
-        run: npm run package
+      # - name: Use Node
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 16.x
+      #     cache: 'npm'
+      # - run: npm i
+      # - run: npm run esbuild-base
 
-      - name: Create Release
-        run: gh release create v${{ steps.package-version.outputs.current-version}} --target main -F CHANGELOG.md ./*.vsix
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Package
+      #   id: package
+      #   run: npm run package
 
-      - name: Publish
-        run: npm run deploy
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      # - name: Create Release
+      #   run: gh release create v${{ steps.package-version.outputs.current-version}} --target main -F CHANGELOG.md ./*.vsix
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Publish
+      #   run: npm run deploy
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   merge:
     needs: release
