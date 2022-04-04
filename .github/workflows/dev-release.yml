@@ -14,10 +14,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-          
-      - name: get-npm-version Pre
+
+      - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
+          
+      - name: Version Pre
         run: echo ${{ steps.package-version.outputs.current-version}}
 
       - name: Version Bump
@@ -31,9 +33,7 @@ jobs:
           patch-wording:  'patch,fixes'
           default: patch
 
-      - name: get-npm-version Post
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+      - name: Version Post
         run: echo ${{ steps.package-version.outputs.current-version}}
 
       # - name: Use Node
