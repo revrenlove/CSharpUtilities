@@ -32,6 +32,7 @@ jobs:
           major-wording: 'major,Major,MAJOR'
           patch-wording:  'patch,fixes'
           default: patch
+          bump-policy: 'ignore'
 
       - name: get-npm-version post
         id: package-version-post
