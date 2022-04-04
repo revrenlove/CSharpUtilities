@@ -26,6 +26,8 @@ jobs:
         with:
           minor-wording: 'minor,Minor,MINOR'
           major-wording: 'major,Major,MAJOR'
+          patch-wording:  'patch,fixes'
+          default: minor
           
       - name: 'package.json POST'
         run: cat ./package.json
