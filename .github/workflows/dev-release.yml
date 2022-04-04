@@ -23,7 +23,12 @@ jobs:
         uses: 'phips28/gh-action-bump-version@master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
-          
+        with:
+          minor-wording: 'minor,Minor,MINOR'
+          major-wording: 'major,Major,MAJOR'
+          patch-wording:  'patch,fixes'
+          default: patch
+
       - name: 'package.json POST'
         run: cat ./package.json
 
