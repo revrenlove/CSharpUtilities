@@ -15,7 +15,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: get-npm-version
+      - name: get-npm-version pre
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
           
@@ -32,6 +32,10 @@ jobs:
           major-wording: 'major,Major,MAJOR'
           patch-wording:  'patch,fixes'
           default: minor
+
+      - name: get-npm-version post
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
 
       - name: Version Post
         run: echo ${{ steps.package-version.outputs.current-version}}
