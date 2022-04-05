@@ -75,12 +75,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: GH_TOKEN
-        if: env.GH_TOKEN == ''
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
-
       - uses: actions/checkout@v3
         with:
           ref: main
@@ -92,3 +86,4 @@ jobs:
           type: now
           target_branch: dev
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'MINOR: Merge `main` back into `dev`'
