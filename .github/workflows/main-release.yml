@@ -72,7 +72,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge main into dev
         uses: devmasx/merge-branch@master
@@ -82,3 +81,17 @@ jobs:
           target_branch: dev
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: 'MINOR: Merge `main` back into `dev`'
+
+      - uses: actions/checkout@v3
+        with:
+          ref: dev
+
+      - name: Version Bump
+        id: version-bump-main-to-dev
+        uses: 'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
+        with:
+          default: minor
+          bump-policy: 'ignore'
+      
