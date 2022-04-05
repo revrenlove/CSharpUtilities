@@ -99,4 +99,5 @@ jobs:
         with:
           default: minor
           bump-policy: 'ignore'
+          target-branch: 'dev'
       
