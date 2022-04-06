@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "0.20.0",
+	"version": "0.21.0",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
