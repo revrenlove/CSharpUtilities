@@ -55,14 +55,15 @@ jobs:
         run: npm run package
 
       - name: Create Release
-        run: gh release create v${{ steps.package-version.outputs.current-version}} --target main -F CHANGELOG.md ./*.vsix
+        run: gh release create v${{ steps.package-version-post.outputs.current-version}} --target main -F CHANGELOG.md ./*.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish
-        run: npm run deploy
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      # TODO: Uncomment below once we're ready to push for v1.0.0
+      # - name: Publish
+      #   run: npm run deploy
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   merge:
     needs: release
