@@ -59,7 +59,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      TODO: Uncomment below once we're ready to push for v1.0.0
+      # TODO: Uncomment below once we're ready to push for v1.0.0
       - name: Publish
         run: npm run deploy
         env:
