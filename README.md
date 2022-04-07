@@ -2,6 +2,10 @@
 
 _That "other" blue soda can, when you already have a red can and a blue can to choose from._
 
+## 🎉 **v1.0.0 NOW AVAILABLE!!!** 🎉
+
+_versions 0.6.0 - 0.7.34 were busted... yeah, sorry about that_ :(
+
 This extension provides some helpful features to _hopefully_ speed up your workflow when developing .net applications in VSCode.
 
 Features currently include:
@@ -99,7 +103,7 @@ Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUt
 - Disallowing project references with circular references
 - DevOps infrastructure
 - Fixed issue where the extension basically didn't work from v0.6.0 on
-- Code cleanup/optimization
+- Code cleanup/optimization/documentation
 
 ### 0.3.1
 
