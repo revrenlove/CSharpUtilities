@@ -1,5 +1,10 @@
 # Change Log
 
+- Disallowing project references with circular references
+- DevOps infrastructure
+- Fixed issue where the extension basically didn't work from v0.6.0 on
+- Code cleanup/optimization
+
 ## [0.3.2] - 2021/05/15
 
 - Accounts for possibility of multiple `RootNamespace` elements

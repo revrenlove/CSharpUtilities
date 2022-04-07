@@ -2,6 +2,10 @@
 
 _That "other" blue soda can, when you already have a red can and a blue can to choose from._
 
+## 🎉 **v1.0.0 NOW AVAILABLE!!!** 🎉
+
+_versions 0.6.0 - 0.7.34 were busted... yeah, sorry about that_ :(
+
 This extension provides some helpful features to _hopefully_ speed up your workflow when developing .net applications in VSCode.
 
 Features currently include:
@@ -34,7 +38,7 @@ Currently the following types of items are supported:
 
   - If multiple `PropertyGroup` elements exist in the `.csproj` file with differing `RootNamespace` values, it will defer to the project name.
 
-![Adding a New Item](./assets/images/dox-add-item.gif)
+![Adding a New Item](./assets/images/readme-add-item.gif)
 
 ### Manage Project References
 
@@ -42,25 +46,24 @@ Right-clicking a `.csproj` file gives your the option to "Manage Project Referen
 
 Simply check the projects you wish to reference and uncheck the ones you don't.
 
-![Adding a New Item](./assets/images/dox-manage-ref.gif)
+![Adding a New Item](./assets/images/readme-manage-ref.gif)
 
 #### **Note: When Managing Project References**
 
-- `dotnet` _does_ allow for circular project references... So... This extension will warn you if you are adding a reference that results in a circular reference.
+- If a circular reference would be created from this action, an error will be displayed and it will be aborted.
 
 - This feature does not manually edit the `.csproj` file - it actually executes the commands in an integrated terminal instance. So, if things do not go as you expect, check your integrated terminal named `dotnet` for any weirdness, and, please, feel free to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
 ## Requirements
 
-- Visual Studio Code v1.55.0 or higher.
-- .NET 5 or .NET Core SDK
+- Visual Studio Code v1.65.0 or higher.
+- .NET 5+ or .NET Core SDK
 
 ## Upcoming Features
 
-- Ability to add new C# projects.
-- Ability to remove C# projects (and all references thereof).
-- Ability to manage NuGet packages.
-- Warning when adding circular project references.
+- Ability to add/remove C# projects.
+- Project reference tree view
+- Option for C#10 syntax features in new item templates
 
 ## To answer the question... "Why?"
 
@@ -85,6 +88,7 @@ I cannot speak on behalf of the packages utilized in this extension :
 - [inversify](https://www.npmjs.com/package/inversify)
 - [reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
 - [util](https://www.npmjs.com/package/util)
+- [ts-md5](https://www.npmjs.com/package/ts-md5)
 
 ## [Issues](https://github.com/revrenlove/CSharpUtilities/issues)
 
@@ -93,6 +97,13 @@ Check the [bugs](https://github.com/revrenlove/CSharpUtilities/labels/bug) for t
 Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
 ## Release Notes
+
+### 1.0.0
+
+- Disallowing project references with circular references
+- DevOps infrastructure
+- Fixed issue where the extension basically didn't work from v0.6.0 on
+- Code cleanup/optimization/documentation
 
 ### 0.3.1
 
