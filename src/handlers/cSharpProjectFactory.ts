@@ -15,8 +15,8 @@ type JsonNode = KeyValuePair[] | KeyValuePair | undefined;
 @injectable()
 export class CSharpProjectFactory {
 
-    private fileHandler: FileHandler;
-    private parser: XMLParser;
+    private readonly fileHandler: FileHandler;
+    private readonly parser: XMLParser;
 
     public constructor(@inject(TYPES.fileHandler) fileHandler: FileHandler) {
 
@@ -37,9 +37,12 @@ export class CSharpProjectFactory {
         const projectReferencePaths = this.getReferencePaths(json, "ProjectReference", uri.fsPath);
 
         const cSharpProject: CSharpProject = {
+            name: path.parse(uri.fsPath).name,
+            uri: uri,
             path: uri.fsPath,
             rootNamespace: rootNamespace,
-            projectReferencePaths: projectReferencePaths
+            projectReferencePaths: projectReferencePaths,
+            projectReferenceUris: projectReferencePaths.map(p => vscode.Uri.file(p))
         };
 
         return cSharpProject;
