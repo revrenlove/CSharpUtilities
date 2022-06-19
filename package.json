@@ -150,7 +150,7 @@
 			"activitybar": [
 				{
 					"id": "project-reference-explorer",
-					"title": "Project Reference ExplorerACT",
+					"title": "Project Reference Explorer",
 					"icon": "./assets/images/logo-mono-sidebar.png"
 				}
 			]

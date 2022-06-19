@@ -41,25 +41,24 @@ jobs:
       - name: Version Post
         run: echo ${{ steps.package-version-post.outputs.current-version}}
 
-      # TODO: Uncomment below once we're ready to push for v1.0.0
-      # - name: Use Node
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: 16.x
-      #     cache: 'npm'
-      # - run: npm i
-      # - run: npm run esbuild-base      
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm i
+      - run: npm run esbuild-base      
 
-      # - name: Package
-      #   id: package
-      #   run: npm run package -- --pre-release
+      - name: Package
+        id: package
+        run: npm run package -- --pre-release
 
-      # - name: Create Release
-      #   run: gh release create v${{ steps.package-version-post.outputs.current-version}} --target dev -p -F CHANGELOG.md ./*.vsix
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        run: gh release create v${{ steps.package-version-post.outputs.current-version}} --target dev -p -F CHANGELOG.md ./*.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Publish
-      #   run: npm run deploy -- --pre-release
-      #   env:
-      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: Publish
+        run: npm run deploy -- --pre-release
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
