@@ -3,9 +3,8 @@ import TYPES from '../types';
 import { inject, injectable } from 'inversify';
 import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import { Command } from './command';
-import { TreeNode } from '../framework/treeNode';
-import { CSharpProject } from '../handlers/cSharpProject';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
+import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
@@ -23,15 +22,15 @@ export class ManageProjectReferencesCommand implements Command {
         this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
-    public async execute(resource: vscode.Uri | TreeNode<CSharpProject>): Promise<void> {
+    public async execute(resource: vscode.Uri | ProjectReferenceTreeItem): Promise<void> {
 
         let uri: vscode.Uri;
 
         if (resource instanceof vscode.Uri) {
             uri = resource;
         }
-        else { // if (resource instanceof TreeNode)
-            uri = resource.value.uri;
+        else { // if (resource instanceof ProjectReferenceTreeItem)
+            uri = resource.cSharpProject.uri;
         }
 
         const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);

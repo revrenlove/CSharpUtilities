@@ -17,15 +17,18 @@ export class SelectRootProjectCommand implements Command {
 
     private readonly quickPickItemHelper: QuickPickItemHelper;
     private readonly cSharpProjectFactory: CSharpProjectFactory;
+    private readonly projectReferenceHandler: ProjectReferenceHandler;
     private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
 
     public constructor(
         @inject(TYPES.quickPickItemHelper) quickPickItemHelper: QuickPickItemHelper,
         @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory,
+        @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
         @inject(TYPES.projectReferenceTreeDataProvider) projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider) {
 
         this.quickPickItemHelper = quickPickItemHelper;
         this.cSharpProjectFactory = cSharpProjectFactory;
+        this.projectReferenceHandler = projectReferenceHandler;
         this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
     }
 
@@ -49,21 +52,7 @@ export class SelectRootProjectCommand implements Command {
             return;
         }
 
-        const root = await this.buildProjectReferenceTree(new TreeNode(selectedProject));
-
-        const fauxNode = new TreeNode<CSharpProject>({
-            name: selectedProject.name,
-            path: selectedProject.path,
-            uri: selectedProject.uri,
-            rootNamespace: selectedProject.rootNamespace,
-            projectReferencePaths: [selectedProject.path],
-            projectReferenceUris: [vscode.Uri.file(selectedProject.path)]
-        });
-
-        fauxNode.children = [root];
-
-        // TODO: Render tree...
-        this.renderTree(fauxNode);
+        await this.projectReferenceTreeDataProvider.renderTreeTest(selectedProject);
     }
 
     public async executeXXX(): Promise<void> {
@@ -105,64 +94,5 @@ export class SelectRootProjectCommand implements Command {
         const cSharpProjects = await Promise.all(mapPromises);
 
         return cSharpProjects;
-    }
-
-    // TODO: This will probably get moved to another 
-    // class since it wil probably need to be used by the `ProjectReferenceHandler`
-    private async buildProjectReferenceTree(node: TreeNode<CSharpProject>): Promise<TreeNode<CSharpProject>> {
-
-        // const wrapperFauxProjectNode = new TreeNode<CSharpProject>({
-        //     name: node.value.name,
-        //     uri: node.value.uri,
-        //     path: node.value.path,
-        //     rootNamespace: node.value.rootNamespace,
-        //     projectReferencePaths: [node.value.path]
-        // });
-
-        const project = node.value;
-        // const project = wrapperFauxProjectNode.value;
-
-        const nodePromises = project.projectReferencePaths.map(async path => {
-
-            const childProject = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(path));
-
-            // let child = new TreeNode(childProject, wrapperFauxProjectNode);
-            let child = new TreeNode(childProject, node);
-
-            child = await this.buildProjectReferenceTree(child);
-
-            node.children.push(child);
-        });
-
-        await Promise.all(nodePromises);
-
-        // // Wrap node...
-        // const wrapperFauxProject = new TreeNode<CSharpProject>({
-        //     name: node.value.name,
-        //     uri: node.value.uri,
-        //     path: node.value.path,
-        //     rootNamespace: node.value.rootNamespace,
-        //     projectReferencePaths: [node.value.path]
-        // });
-
-        // x.children = [node];
-
-        // node.parent = x;
-
-        return node;
-    }
-
-    private renderTree(node: TreeNode<CSharpProject>): void {
-
-        const treeItem = new ProjectReferenceTreeItem(node);
-
-        this.projectReferenceTreeDataProvider.refresh(treeItem);
-
-        const treeView = vscode.window.createTreeView('projectReferences', {
-            treeDataProvider: this.projectReferenceTreeDataProvider,
-            showCollapseAll: true
-        });
-
-        treeView.title = node.value.name;
     }
 }

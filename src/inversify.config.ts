@@ -25,7 +25,7 @@ container.bind<CSharpProjectFactory>(TYPES.cSharpProjectFactory).to(CSharpProjec
 
 container.bind<QuickPickItemHelper>(TYPES.quickPickItemHelper).to(QuickPickItemHelper);
 
-container.bind<ProjectReferenceTreeDataProvider>(TYPES.projectReferenceTreeDataProvider).to(ProjectReferenceTreeDataProvider);
+container.bind<ProjectReferenceTreeDataProvider>(TYPES.projectReferenceTreeDataProvider).to(ProjectReferenceTreeDataProvider).inSingletonScope();
 
 Object.values(commands).forEach(command => {
     container.bind<Command>(TYPES.command).to(command);

@@ -17,9 +17,8 @@ export class RefreshProjectReferenceTreeViewCommand implements Command {
         this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
     }
 
-    // TODO: May need to be async...
-    public execute(): any {
+    public async execute(): Promise<any> {
 
-        this.projectReferenceTreeDataProvider.refresh();
+        await this.projectReferenceTreeDataProvider.renderTreeTest();
     }
 }

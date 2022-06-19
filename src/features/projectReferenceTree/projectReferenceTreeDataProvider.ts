@@ -12,14 +12,18 @@ import { TreeNode } from '../../framework/treeNode';
 export class ProjectReferenceTreeDataProvider implements vscode.TreeDataProvider<ProjectReferenceTreeItem> {
 
     private readonly projectReferenceHandler: ProjectReferenceHandler;
+    private readonly cSharpProjectFactory: CSharpProjectFactory;
     private readonly treeDataChangeEmitter: vscode.EventEmitter<void | ProjectReferenceTreeItem | null | undefined>;
 
     private rootElement?: ProjectReferenceTreeItem;
     // private rootElements: ProjectReferenceTreeItem[] = [];
 
-    constructor(@inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler) {
+    constructor(
+        @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
+        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
 
         this.projectReferenceHandler = projectReferenceHandler;
+        this.cSharpProjectFactory = cSharpProjectFactory;
 
         this.treeDataChangeEmitter = new vscode.EventEmitter<ProjectReferenceTreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this.treeDataChangeEmitter.event;
@@ -61,9 +65,9 @@ export class ProjectReferenceTreeDataProvider implements vscode.TreeDataProvider
         }
 
         // TODO: THIS IS WRONG!!!
-        const treeNodes: TreeNode<CSharpProject>[] = [new TreeNode<CSharpProject>(projects[0])];
+        // const treeNodes: TreeNode<CSharpProject>[] = [new TreeNode<CSharpProject>(projects[0])];
 
-        this.rootElement = projects.map(p => new ProjectReferenceTreeItem(p))
+        // this.rootElement = this.projectReferenceHandler.handleReferences
 
         const x = projects;
     }
@@ -96,21 +100,63 @@ export class ProjectReferenceTreeDataProvider implements vscode.TreeDataProvider
         this.treeDataChangeEmitter.fire();
     }
 
-    // TODO: DELETE THIS....
-    public deleteMe() {
-        const x: CSharpProject = {
-            name: '',
-            uri: vscode.Uri.file(''),
-            path: '',
-            rootNamespace: '',
-            projectReferencePaths: [],
-            projectReferenceUris: []
-        };
+    public renderTree(node: TreeNode<CSharpProject>): void {
 
-        this.refreshTest();
-        this.refreshTest(x);
-        this.refreshTest(x, x, x, x, x, x);
-        this.refreshTest([x]);
-        this.refreshTest([x, x]);
+        const fauxNode = new TreeNode<CSharpProject>({
+            name: node.value.name,
+            path: node.value.path,
+            uri: node.value.uri,
+            rootNamespace: node.value.rootNamespace,
+            projectReferencePaths: [node.value.path],
+            projectReferenceUris: [vscode.Uri.file(node.value.path)]
+        });
+
+        fauxNode.children = [node];
+
+        const treeItem = new ProjectReferenceTreeItem(fauxNode);
+
+        this.refresh(treeItem);
+
+        const treeView = vscode.window.createTreeView('projectReferences', {
+            treeDataProvider: this,
+            showCollapseAll: true
+        });
+
+        treeView.title = node.value.name;
+    }
+
+    public async renderTreeTest(cSharpProject?: CSharpProject): Promise<void> {
+
+        if (!cSharpProject) {
+            if (!this.rootElement) {
+                throw new Error();
+            }
+
+            cSharpProject = await this.cSharpProjectFactory.fromUri(this.rootElement.children[0].cSharpProject.uri);
+        }
+
+        const root = await this.projectReferenceHandler.buildProjectReferenceTree(new TreeNode(cSharpProject));
+
+        const fauxNode = new TreeNode<CSharpProject>({
+            name: root.value.name,
+            path: root.value.path,
+            uri: root.value.uri,
+            rootNamespace: root.value.rootNamespace,
+            projectReferencePaths: [root.value.path],
+            projectReferenceUris: [vscode.Uri.file(root.value.path)]
+        });
+
+        fauxNode.children = [root];
+
+        const treeItem = new ProjectReferenceTreeItem(fauxNode);
+
+        this.refresh(treeItem);
+
+        const treeView = vscode.window.createTreeView('projectReferences', {
+            treeDataProvider: this,
+            showCollapseAll: true
+        });
+
+        treeView.title = root.value.name;
     }
 }

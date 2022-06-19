@@ -25,6 +25,7 @@ export class ProjectReferenceTreeItem extends vscode.TreeItem {
 
     public readonly children: ProjectReferenceTreeItem[];
 
+    // TODO: JE - what the fuck is this supposed to be?
     private RenameMe(): void {
 
     }

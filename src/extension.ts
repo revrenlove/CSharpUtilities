@@ -14,10 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const projectReferenceTreeDataProvider = container.get<ProjectReferenceTreeDataProvider>(TYPES.projectReferenceTreeDataProvider);
 	vscode.window.registerTreeDataProvider('projectReferences', projectReferenceTreeDataProvider);
 
-	// TODO: Maybe actually make commands for these???
-	vscode.commands.registerCommand('c-sharp-utilities.refreshRootProject', () =>
-		projectReferenceTreeDataProvider.refresh()
-	);
 	vscode.commands.registerCommand('c-sharp-utilities.clearProjectReferenceExplorer', () =>
 		projectReferenceTreeDataProvider.clear()
 	);

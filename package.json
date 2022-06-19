@@ -60,7 +60,7 @@
 				"title": "Select Root Project..."
 			},
 			{
-				"command": "c-sharp-utilities.refreshRootProject",
+				"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
 				"title": "Refresh",
 				"icon": "$(refresh)"
 			},
@@ -127,7 +127,7 @@
 					"group": "navigation"
 				},
 				{
-					"command": "c-sharp-utilities.refreshRootProject",
+					"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
 					"when": "view == projectReferences",
 					"group": "navigation"
 				}
