@@ -2,17 +2,14 @@
 
 _That "other" blue soda can, when you already have a red can and a blue can to choose from._
 
-## 🎉 **v1.0.0 NOW AVAILABLE!!!** 🎉
-
-_versions 0.6.0 - 0.7.34 were busted... yeah, sorry about that_ :(
-
 This extension provides some helpful features to _hopefully_ speed up your workflow when developing .net applications in VSCode.
 
 Features currently include:
 
 - Adding a class/interface/etc from the Explorer side bar
 - Managing project references
-- Not collecting any data.
+- See all projects' references in a tree view
+- Not collecting any data
 
 ## Features
 
@@ -46,13 +43,19 @@ Right-clicking a `.csproj` file gives your the option to "Manage Project Referen
 
 Simply check the projects you wish to reference and uncheck the ones you don't.
 
-![Adding a New Item](./assets/images/readme-manage-ref.gif)
+![Managing Project References](./assets/images/readme-manage-ref.gif)
 
 #### **Note: When Managing Project References**
 
 - If a circular reference would be created from this action, an error will be displayed and it will be aborted.
 
 - This feature does not manually edit the `.csproj` file - it actually executes the commands in an integrated terminal instance. So, if things do not go as you expect, check your integrated terminal named `dotnet` for any weirdness, and, please, feel free to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
+
+### Project Reference Tree
+
+Selecting the C# icon on the side-bar will pull up the view and prompt you to select a "root" project. A list will be displayed of all C# projects in the workspace. Once selected the view will be populated with a tree showing the project reference dependency tree. You can also edit the references for a project by clicking on the pencil, and the tree will automatically refresh.
+
+![Project Reference Tree](./assets/images/readme-reference-tree.gif)
 
 ## Requirements
 
@@ -62,7 +65,6 @@ Simply check the projects you wish to reference and uncheck the ones you don't.
 ## Upcoming Features
 
 - Ability to add/remove C# projects.
-- Project reference tree view
 - Option for C#10 syntax features in new item templates
 
 ## To answer the question... "Why?"
@@ -97,6 +99,11 @@ Check the [bugs](https://github.com/revrenlove/CSharpUtilities/labels/bug) for t
 Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUtilities/issues/new).
 
 ## Release Notes
+
+### 1.1.0 (pre-release)
+
+- Adding project reference tree.
+- Code cleanup/refactor
 
 ### 1.0.0
 
