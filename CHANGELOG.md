@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.1.0] - (pre-release) - 2022/06/19
+## [1.2.0] - 2022/06/19
 
 - Adding project reference tree.
 - Code cleanup/refactor

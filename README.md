@@ -100,7 +100,7 @@ Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUt
 
 ## Release Notes
 
-### 1.1.0 (pre-release)
+### 1.2.0
 
 - Adding project reference tree.
 - Code cleanup/refactor
