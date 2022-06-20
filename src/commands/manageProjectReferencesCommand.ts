@@ -35,6 +35,7 @@ export class ManageProjectReferencesCommand implements Command {
 
         const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);
 
+        // TODO: add a conditional to return if NOT on the reference tree view
         if (!selectedProjectUris) {
             return;
         }
@@ -56,7 +57,7 @@ export class ManageProjectReferencesCommand implements Command {
     private async referencesHaveBeenUpdated(projectUri: vscode.Uri, referencedProjectsUris: vscode.Uri[]): Promise<boolean> {
 
         try {
-            const project = await this.cSharpProjectFactory.fromUri(projectUri);
+            const project = await this.cSharpProjectFactory.fromUriAsync(projectUri);
 
             if (project.projectReferenceUris.length !== referencedProjectsUris.length) {
                 return false;

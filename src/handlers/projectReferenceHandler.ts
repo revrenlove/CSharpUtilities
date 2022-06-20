@@ -4,11 +4,9 @@ import TYPES from '../types';
 import { CsProjFileQuickPickItem } from './csProjFileQuickPickItem';
 import { inject, injectable } from 'inversify';
 import { TerminalHandler } from './terminalHandler';
-import { Util } from '../util';
 import { TreeNode } from '../framework/treeNode';
 import { CSharpProject } from './cSharpProject';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
-import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
 
 @injectable()
 export class ProjectReferenceHandler {
@@ -27,7 +25,7 @@ export class ProjectReferenceHandler {
     // TODO: Refactor this so it's not so fucking long...
     public async handleReferences(contextualProjectUri: vscode.Uri): Promise<vscode.Uri[] | undefined> {
 
-        const contextualProject = await this.cSharpProjectFactory.fromUri(contextualProjectUri);
+        const contextualProject = await this.cSharpProjectFactory.fromUriAsync(contextualProjectUri);
 
         const otherWorkspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
 
@@ -104,18 +102,13 @@ export class ProjectReferenceHandler {
         return selectedProjects.map(p => p.uri);
     }
 
-    // TODO: JE - this will probably be changed??? maybe????
-    // public buildProjectReferenceTree(): ProjectReferenceTreeItem {
-
-    // }
-
     public async buildProjectReferenceTree(node: TreeNode<CSharpProject>): Promise<TreeNode<CSharpProject>> {
 
         const project = node.value;
 
         const nodePromises = project.projectReferencePaths.map(async path => {
 
-            const childProject = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(path));
+            const childProject = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(path));
 
             // let child = new TreeNode(childProject, wrapperFauxProjectNode);
             let child = new TreeNode(childProject, node);
@@ -126,19 +119,6 @@ export class ProjectReferenceHandler {
         });
 
         await Promise.all(nodePromises);
-
-        // const fauxNode = new TreeNode<CSharpProject>({
-        //     name: project.name,
-        //     path: project.path,
-        //     uri: project.uri,
-        //     rootNamespace: project.rootNamespace,
-        //     projectReferencePaths: [project.path],
-        //     projectReferenceUris: [vscode.Uri.file(project.path)]
-        // });
-
-        // fauxNode.children = [node];
-
-        // return fauxNode;
 
         return node;
     }
@@ -238,7 +218,7 @@ export class ProjectReferenceHandler {
 
         for (let i = 0; i < node.children.length; i++) {
 
-            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
+            const project = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(node.children[i].value));
 
             node.children[i].children =
                 project

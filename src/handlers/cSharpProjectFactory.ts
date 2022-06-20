@@ -24,8 +24,7 @@ export class CSharpProjectFactory {
         this.parser = new XMLParser({ ignoreAttributes: false });
     }
 
-    // TODO: JE - rename this async...
-    public async fromUri(uri: vscode.Uri): Promise<CSharpProject> {
+    public async fromUriAsync(uri: vscode.Uri): Promise<CSharpProject> {
 
         const projectName = path.parse(uri.fsPath).name;
 

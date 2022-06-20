@@ -17,16 +17,10 @@ export class ProjectReferenceTreeItem extends vscode.TreeItem {
 
         this.cSharpProject = cSharpProjectNode.value;
 
-        // TODO: JE - we might need to loop/dive into the tree...
         this.children = cSharpProjectNode.children.map(node => new ProjectReferenceTreeItem(node));
     }
 
     public readonly cSharpProject: CSharpProject;
 
     public readonly children: ProjectReferenceTreeItem[];
-
-    // TODO: JE - what the fuck is this supposed to be?
-    private RenameMe(): void {
-
-    }
 }

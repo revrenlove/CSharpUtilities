@@ -10,7 +10,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	commandManager.registerCommands(context);
 
-	// TODO: Put the `ProjectReferenceProvider` in the container...
 	const projectReferenceTreeDataProvider = container.get<ProjectReferenceTreeDataProvider>(TYPES.projectReferenceTreeDataProvider);
 	vscode.window.registerTreeDataProvider('projectReferences', projectReferenceTreeDataProvider);
 

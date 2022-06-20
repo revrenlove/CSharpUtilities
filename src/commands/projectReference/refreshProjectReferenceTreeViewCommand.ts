@@ -1,5 +1,3 @@
-// import { Command } from "vscode";
-
 import { inject, injectable } from "inversify";
 import { ProjectReferenceTreeDataProvider } from "../../features/projectReferenceTree/projectReferenceTreeDataProvider";
 import TYPES from "../../types";
@@ -19,6 +17,6 @@ export class RefreshProjectReferenceTreeViewCommand implements Command {
 
     public async execute(): Promise<any> {
 
-        await this.projectReferenceTreeDataProvider.renderTreeTest();
+        await this.projectReferenceTreeDataProvider.renderTree();
     }
 }
