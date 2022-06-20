@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "1.0.0",
+	"version": "1.1.2",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
@@ -52,7 +52,22 @@
 			},
 			{
 				"command": "c-sharp-utilities.manageProjectReferences",
-				"title": "Manage Project References..."
+				"title": "Manage Project References...",
+				"icon": "$(edit)"
+			},
+			{
+				"command": "c-sharp-utilities.selectRootProject",
+				"title": "Select Root Project..."
+			},
+			{
+				"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
+				"title": "Refresh",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "c-sharp-utilities.clearProjectReferenceExplorer",
+				"title": "Clear",
+				"icon": "$(clear-all)"
 			}
 		],
 		"menus": {
@@ -104,6 +119,25 @@
 					"command": "c-sharp-utilities.addStruct",
 					"when": "false"
 				}
+			],
+			"view/title": [
+				{
+					"command": "c-sharp-utilities.clearProjectReferenceExplorer",
+					"when": "view == projectReferences",
+					"group": "navigation"
+				},
+				{
+					"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
+					"when": "view == projectReferences",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "view == projectReferences",
+					"group": "inline"
+				}
 			]
 		},
 		"submenus": [
@@ -111,12 +145,37 @@
 				"id": "cSharp.addItem",
 				"label": "Add C# Item..."
 			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "project-reference-explorer",
+					"title": "Project Reference Explorer",
+					"icon": "./assets/images/logo-mono-sidebar.png"
+				}
+			]
+		},
+		"views": {
+			"project-reference-explorer": [
+				{
+					"id": "projectReferences",
+					"name": "Project References",
+					"icon": "./assets/images/logo-mono-sidebar.png",
+					"contextualTitle": "Project Reference Explorer"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "projectReferences",
+				"contents": "[Select Root Project...](command:c-sharp-utilities.selectRootProject)"
+			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run esbuild-base -- --minify",
-		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node && npm run copy-static",
-		"esbuild": "npm run esbuild-base -- --sourcemap",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+		"esbuild": "npm run esbuild-base -- --sourcemap && npm run copy-static",
 		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
 		"test-compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",

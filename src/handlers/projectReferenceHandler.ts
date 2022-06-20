@@ -4,7 +4,6 @@ import TYPES from '../types';
 import { CsProjFileQuickPickItem } from './csProjFileQuickPickItem';
 import { inject, injectable } from 'inversify';
 import { TerminalHandler } from './terminalHandler';
-import { Util } from '../util';
 import { TreeNode } from '../framework/treeNode';
 import { CSharpProject } from './cSharpProject';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
@@ -23,9 +22,10 @@ export class ProjectReferenceHandler {
         this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
-    public async handleReferences(contextualProjectUri: vscode.Uri): Promise<void> {
+    // TODO: Refactor this so it's not so fucking long...
+    public async handleReferences(contextualProjectUri: vscode.Uri): Promise<vscode.Uri[] | undefined> {
 
-        const contextualProject = await this.cSharpProjectFactory.fromUri(contextualProjectUri);
+        const contextualProject = await this.cSharpProjectFactory.fromUriAsync(contextualProjectUri);
 
         const otherWorkspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
 
@@ -58,6 +58,11 @@ export class ProjectReferenceHandler {
 
         // Menu was closed
         if (!selectedProjects) {
+            return;
+        }
+
+        // Selected Projects didn't change but Ok was clicked.
+        if (!this.projectReferenceSelectionHasChanged(quickPickItems, selectedProjects)) {
             return;
         }
 
@@ -94,7 +99,28 @@ export class ProjectReferenceHandler {
             this.dotnetReferenceCommandHelper(directoryPath, 'remove', pathsOfProjectsToRemove);
         }
 
-        return;
+        return selectedProjects.map(p => p.uri);
+    }
+
+    public async buildProjectReferenceTree(node: TreeNode<CSharpProject>): Promise<TreeNode<CSharpProject>> {
+
+        const project = node.value;
+
+        const nodePromises = project.projectReferencePaths.map(async path => {
+
+            const childProject = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(path));
+
+            // let child = new TreeNode(childProject, wrapperFauxProjectNode);
+            let child = new TreeNode(childProject, node);
+
+            child = await this.buildProjectReferenceTree(child);
+
+            node.children.push(child);
+        });
+
+        await Promise.all(nodePromises);
+
+        return node;
     }
 
     private async getWorkspaceProjectUris(contextualProjectUri: vscode.Uri): Promise<vscode.Uri[]> {
@@ -169,7 +195,7 @@ export class ProjectReferenceHandler {
     private async getRootTreeNode(
         project: CSharpProject,
         projectPathsToAdd: string[],
-        projectPathsToRemove: string[]): Promise<TreeNode> {
+        projectPathsToRemove: string[]): Promise<TreeNode<string>> {
 
         project.projectReferencePaths =
             project
@@ -184,7 +210,7 @@ export class ProjectReferenceHandler {
         return rootNode;
     }
 
-    private async hasCircularReferences(node: TreeNode): Promise<Boolean> {
+    private async hasCircularReferences(node: TreeNode<string>): Promise<boolean> {
 
         if (node.children.some(n => n.isCircular())) {
             return true;
@@ -192,7 +218,7 @@ export class ProjectReferenceHandler {
 
         for (let i = 0; i < node.children.length; i++) {
 
-            const project = await this.cSharpProjectFactory.fromUri(vscode.Uri.file(node.children[i].value));
+            const project = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(node.children[i].value));
 
             node.children[i].children =
                 project
@@ -205,5 +231,20 @@ export class ProjectReferenceHandler {
         }
 
         return false;
+    }
+
+    private projectReferenceSelectionHasChanged(initial: CsProjFileQuickPickItem[], final: CsProjFileQuickPickItem[]): boolean {
+
+        const initialProjectNames = initial.filter(c => c.picked).map(c => c.label);
+
+        const finalProjectNames = final.map(c => c.label);
+
+        if (initialProjectNames.length !== finalProjectNames.length) {
+            return true;
+        }
+
+        const selectionHasChanged = !initialProjectNames.every(n => finalProjectNames.includes(n));
+
+        return selectionHasChanged;
     }
 }

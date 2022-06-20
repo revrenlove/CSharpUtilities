@@ -1,10 +1,10 @@
 import { Md5 } from 'ts-md5/dist/md5';
 
-export class TreeNode {
+export class TreeNode<T> {
 
     private readonly valueHash: string;
 
-    constructor(value: NonNullable<any>, parent?: TreeNode) {
+    constructor(value: NonNullable<T>, parent?: TreeNode<T>) {
 
         this.value = value;
         this.parent = parent;
@@ -13,11 +13,13 @@ export class TreeNode {
         this.valueHash = Md5.hashStr(JSON.stringify(this.value));
     }
 
-    public value: NonNullable<any>;
-    public children: TreeNode[];
-    public parent: TreeNode | undefined;
+    public value: NonNullable<T>;
+    public children: TreeNode<T>[];
+    public parent: TreeNode<T> | undefined;
 
-    public isCircular(): Boolean {
+    // TODO: Maybe add a method that accepts a lambda for building out the tree...
+
+    public isCircular(): boolean {
 
         let parent = this.parent;
 

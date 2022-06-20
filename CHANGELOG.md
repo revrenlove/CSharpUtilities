@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.0] - 2022/06/19
+
+- Adding project reference tree.
+- Code cleanup/refactor
+
+## [1.0.0] - 2022/04/07
+
 - Disallowing project references with circular references
 - DevOps infrastructure
 - Fixed issue where the extension basically didn't work from v0.6.0 on
