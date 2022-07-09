@@ -48,7 +48,7 @@ jobs:
           node-version: 16.x
           cache: 'npm'
       - run: npm i
-      - run: npm run esbuild-base
+      - run: npm run esbuild
 
       - name: Package
         id: package
