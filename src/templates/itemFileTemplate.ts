@@ -1,6 +1,6 @@
 export interface ItemFileTemplate {
 
     namespace: string;
-    objectType: string;
+    typeSystem: string;
     objectName: string;
 }

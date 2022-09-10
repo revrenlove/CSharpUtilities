@@ -43,7 +43,7 @@ export class GenericTemplateHandler {
 
         const template: ItemFileTemplate = {
             namespace: namespace,
-            objectType: TemplateType[templateType],
+            typeSystem: TemplateType[templateType],
             objectName: objectName,
         };
 
