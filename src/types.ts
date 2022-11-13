@@ -2,6 +2,7 @@ const TYPES = {
     command: Symbol('Command'),
     commandManager: Symbol('CommandManager'),
     projectReferenceHandler: Symbol('ProjectReferenceHandler'),
+    projectReferenceHelper: Symbol('ProjectReferenceHelper'),
     fileHandler: Symbol('FileHandler'),
     terminalHandler: Symbol('TerminalHandler'),
     genericTemplateHandler: Symbol('GenericTemplateHandler'),
