@@ -3,8 +3,9 @@ import TYPES from '../types';
 import { inject, injectable } from 'inversify';
 import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import { Command } from './command';
-import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
+import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
+import { RefreshProjectReferenceTreeViewCommand } from './projectReference/refreshProjectReferenceTreeViewCommand';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
@@ -12,22 +13,24 @@ export class ManageProjectReferencesCommand implements Command {
     public readonly id: string = 'c-sharp-utilities.manageProjectReferences';
 
     private readonly projectReferenceHandler: ProjectReferenceHandler;
-    private readonly cSharpProjectFactory: CSharpProjectFactory;
+    private readonly projectReferenceHelper: ProjectReferenceHelper;
 
     constructor(
         @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
-        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
+        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper) {
 
         this.projectReferenceHandler = projectReferenceHandler;
-        this.cSharpProjectFactory = cSharpProjectFactory;
+        this.projectReferenceHelper = projectReferenceHelper;
     }
 
     public async execute(resource: vscode.Uri | ProjectReferenceTreeItem): Promise<void> {
 
+        let isFromTreeView: boolean = true;
         let uri: vscode.Uri;
 
         if (resource instanceof vscode.Uri) {
             uri = resource;
+            isFromTreeView = false;
         }
         else { // if (resource instanceof ProjectReferenceTreeItem)
             uri = resource.cSharpProject.uri;
@@ -35,41 +38,24 @@ export class ManageProjectReferencesCommand implements Command {
 
         const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);
 
-        // TODO: add a conditional to return if NOT on the reference tree view
-        if (!selectedProjectUris) {
+        if (!selectedProjectUris || !isFromTreeView) {
             return;
         }
 
         const updateCheckTimeout = setInterval(async (): Promise<void> => {
 
-            const referencesHaveBeenUpdated = await this.referencesHaveBeenUpdated(uri, selectedProjectUris);
+            const referencesHaveBeenUpdated =
+                await
+                    this
+                        .projectReferenceHelper
+                        .referencesHaveBeenUpdated(uri, selectedProjectUris);
 
             if (referencesHaveBeenUpdated) {
 
                 clearInterval(updateCheckTimeout);
 
-                // TODO: figure out how to not have this be a magic string...
-                await vscode.commands.executeCommand('c-sharp-utilities.refreshProjectReferenceTreeViewCommand');
+                await RefreshProjectReferenceTreeViewCommand.execute();
             }
         }, 1000);
-    }
-
-    private async referencesHaveBeenUpdated(projectUri: vscode.Uri, referencedProjectsUris: vscode.Uri[]): Promise<boolean> {
-
-        try {
-            const project = await this.cSharpProjectFactory.fromUriAsync(projectUri);
-
-            if (project.projectReferenceUris.length !== referencedProjectsUris.length) {
-                return false;
-            }
-
-            const hasBeenUpdated = project.projectReferenceUris.every(p => referencedProjectsUris.some(r => r.fsPath === p.fsPath));
-
-            return hasBeenUpdated;
-        }
-        // Yeah, yeah, I know...
-        catch {
-            return false;
-        }
     }
 }

@@ -56,7 +56,7 @@ export class SelectRootProjectCommand implements Command {
 
         const mapPromises = workspaceProjectUris.map(async (uri): Promise<CSharpProject> => {
 
-            const cSharpProject = this.cSharpProjectFactory.fromUriAsync(uri);
+            const cSharpProject = this.cSharpProjectFactory.resolve(uri);
 
             return cSharpProject;
         });

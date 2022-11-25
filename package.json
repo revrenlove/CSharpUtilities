@@ -68,6 +68,11 @@
 				"command": "c-sharp-utilities.clearProjectReferenceExplorer",
 				"title": "Clear",
 				"icon": "$(clear-all)"
+			},
+			{
+				"command": "c-sharp-utilities.removeProjectCommand",
+				"title": "Remove Project",
+				"icon": "$(trash)"
 			}
 		],
 		"menus": {
@@ -78,6 +83,10 @@
 				},
 				{
 					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "resourceExtname == .csproj"
+				},
+				{
+					"command": "c-sharp-utilities.removeProjectCommand",
 					"when": "resourceExtname == .csproj"
 				}
 			],
@@ -135,6 +144,11 @@
 			"view/item/context": [
 				{
 					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "view == projectReferences",
+					"group": "inline"
+				},
+				{
+					"command": "c-sharp-utilities.removeProjectCommand",
 					"when": "view == projectReferences",
 					"group": "inline"
 				}

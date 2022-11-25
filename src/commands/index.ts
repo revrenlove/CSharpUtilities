@@ -5,6 +5,7 @@ import { AddRecordCommand } from "./addItem/addRecordCommand";
 import { AddStructCommand } from "./addItem/addStructCommand";
 import { ManageProjectReferencesCommand } from "./manageProjectReferencesCommand";
 import { RefreshProjectReferenceTreeViewCommand } from "./projectReference/refreshProjectReferenceTreeViewCommand";
+import { RemoveProjectCommand } from "./removeProjectCommand";
 import { SelectRootProjectCommand } from "./selectRootProjectCommand";
 
 export {
@@ -15,5 +16,6 @@ export {
     AddStructCommand,
     ManageProjectReferencesCommand,
     SelectRootProjectCommand,
-    RefreshProjectReferenceTreeViewCommand
+    RefreshProjectReferenceTreeViewCommand,
+    RemoveProjectCommand
 };

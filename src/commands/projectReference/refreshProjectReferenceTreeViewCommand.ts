@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import { inject, injectable } from "inversify";
 import { ProjectReferenceTreeDataProvider } from "../../features/projectReferenceTree/projectReferenceTreeDataProvider";
 import TYPES from "../../types";
@@ -6,7 +7,9 @@ import { Command } from "../command";
 @injectable()
 export class RefreshProjectReferenceTreeViewCommand implements Command {
 
-    public readonly id: string = 'c-sharp-utilities.refreshProjectReferenceTreeViewCommand';
+    private static readonly _id: string = 'c-sharp-utilities.refreshProjectReferenceTreeViewCommand';
+
+    public readonly id: string = RefreshProjectReferenceTreeViewCommand._id;
 
     private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
 
@@ -18,5 +21,9 @@ export class RefreshProjectReferenceTreeViewCommand implements Command {
     public async execute(): Promise<any> {
 
         await this.projectReferenceTreeDataProvider.renderTree();
+    }
+
+    public static async execute(): Promise<any> {
+        await vscode.commands.executeCommand(this._id);
     }
 }

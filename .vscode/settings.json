@@ -13,6 +13,7 @@
         "Affordance",
         "copyfiles",
         "inversify",
+        "outfile",
         "Retargeting",
         "struct",
         "submenu",
