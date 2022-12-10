@@ -5,6 +5,7 @@ import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import { Command } from './command';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
+import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
@@ -12,13 +13,16 @@ export class ManageProjectReferencesCommand implements Command {
     public readonly id: string = 'c-sharp-utilities.manageProjectReferences';
 
     private readonly projectReferenceHandler: ProjectReferenceHandler;
+    private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
     private readonly cSharpProjectFactory: CSharpProjectFactory;
 
     constructor(
         @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
+        @inject(TYPES.projectReferenceTreeDataProvider) projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider,
         @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
 
         this.projectReferenceHandler = projectReferenceHandler;
+        this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
         this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
@@ -48,8 +52,10 @@ export class ManageProjectReferencesCommand implements Command {
 
                 clearInterval(updateCheckTimeout);
 
-                // TODO: figure out how to not have this be a magic string...
-                await vscode.commands.executeCommand('c-sharp-utilities.refreshProjectReferenceTreeViewCommand');
+                // TODO: we shouldn't have to reinitialize this project var, right?
+                const project = await this.cSharpProjectFactory.fromUriAsync(uri);
+
+                await this.projectReferenceTreeDataProvider.renderTree(project);
             }
         }, 1000);
     }
