@@ -6,8 +6,8 @@ import TYPES from '../types';
 import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 import path = require('path');
-import { RefreshProjectReferenceTreeViewCommand } from './projectReference/refreshProjectReferenceTreeViewCommand';
 import { CSharpProject } from '../handlers/cSharpProject';
+import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
 
 @injectable()
 export class RemoveProjectCommand implements Command {
@@ -16,37 +16,59 @@ export class RemoveProjectCommand implements Command {
 
     private readonly cSharpProjectFactory: CSharpProjectFactory;
     private readonly projectReferenceHelper: ProjectReferenceHelper;
+    private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
 
     constructor(
         @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory,
-        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper) {
+        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper,
+        @inject(TYPES.projectReferenceTreeDataProvider) projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider) {
 
         this.cSharpProjectFactory = cSharpProjectFactory;
         this.projectReferenceHelper = projectReferenceHelper;
+        this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
     }
 
     public async execute(resource: vscode.Uri | ProjectReferenceTreeItem): Promise<void> {
 
-        const project = await this.cSharpProjectFactory.resolve(resource);
+        const deletedProject = await this.cSharpProjectFactory.resolve(resource);
 
-        if (!await this.promptForConfirmation(project.name)) {
+        if (!await this.promptForConfirmation(deletedProject.name)) {
             return;
         }
 
-        const dependantProjects = await this.getDependantProjects(project.path);
+        const dependantProjects = await this.getDependantProjects(deletedProject.path);
 
         // Remove all references
         dependantProjects.forEach(p => {
-            this.projectReferenceHelper.removeReference(path.dirname(p.path), project.path);
+            this.projectReferenceHelper.removeReference(path.dirname(p.path), deletedProject.path);
         });
 
-        // Refresh tree (if applicable)
-        // if (resource instanceof ProjectReferenceTreeItem) {
+        if (!this.projectReferenceTreeDataProvider.rootElement) {
+            return;
+        }
 
-        await RefreshProjectReferenceTreeViewCommand.execute();
-        // }
+        const updateCheckTimeout = setInterval(async (): Promise<void> => {
 
-        await this.deleteProjectFolder(project.path);
+            const referencesHaveBeenUpdated = await this.referencesHaveBeenUpdated(dependantProjects, deletedProject);
+
+            if (referencesHaveBeenUpdated) {
+
+                clearInterval(updateCheckTimeout);
+
+                let project = this.projectReferenceTreeDataProvider.rootElement?.cSharpProject;
+
+                if (!project) {
+                    return;
+                }
+
+                project = await this.cSharpProjectFactory.resolve(project.uri);
+
+                await this.projectReferenceTreeDataProvider.renderTree(project);
+            }
+
+        }, 1000);
+
+        await this.deleteProjectFolder(deletedProject.path);
     }
 
     private async getDependantProjects(projectPath: string): Promise<CSharpProject[]> {
@@ -114,5 +136,34 @@ export class RemoveProjectCommand implements Command {
         }
 
         return false;
+    }
+
+    private async referencesHaveBeenUpdated(projects: CSharpProject[], deletedProject: CSharpProject): Promise<boolean> {
+
+        // const x = 
+        //     projects
+        //         .map(async (p) => await this.cSharpProjectFactory.resolve(p.uri))
+        //         .some(p => p.projectReferencePaths.includes(deletedProject.path));
+
+        // projects = await Promise.all(projects.map((async (p): Promise<CSharpProject> => {
+
+        //     const project = await this.cSharpProjectFactory.resolve(p.uri);
+
+        //     return project;
+        // })));
+
+        // const x = projects.some(p => p.projectReferencePaths.includes(deletedProject.path));
+
+        for (const project of projects) {
+
+            const hasDeletedProject = (await this.cSharpProjectFactory.resolve(project.uri)).projectReferencePaths.includes(deletedProject.path);
+
+            if (hasDeletedProject) {
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }

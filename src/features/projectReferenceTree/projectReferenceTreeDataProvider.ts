@@ -14,7 +14,7 @@ export class ProjectReferenceTreeDataProvider implements vscode.TreeDataProvider
     private readonly cSharpProjectFactory: CSharpProjectFactory;
     private readonly treeDataChangeEmitter: vscode.EventEmitter<void | ProjectReferenceTreeItem | null | undefined>;
 
-    private rootElement?: ProjectReferenceTreeItem;
+    public rootElement?: ProjectReferenceTreeItem;
 
     constructor(
         @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
@@ -75,7 +75,7 @@ export class ProjectReferenceTreeDataProvider implements vscode.TreeDataProvider
 
         if (!cSharpProject) {
             if (!this.rootElement) {
-                throw new Error();
+                return;
             }
 
             cSharpProject = await this.cSharpProjectFactory.resolve(this.rootElement.children[0].cSharpProject.uri);

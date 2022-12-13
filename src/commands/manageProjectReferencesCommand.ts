@@ -6,7 +6,7 @@ import { Command } from './command';
 import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
 import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
 import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
-import { RefreshProjectReferenceTreeViewCommand } from './projectReference/refreshProjectReferenceTreeViewCommand';
+import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
@@ -16,37 +16,48 @@ export class ManageProjectReferencesCommand implements Command {
     private readonly projectReferenceHandler: ProjectReferenceHandler;
     private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
     private readonly projectReferenceHelper: ProjectReferenceHelper;
+    private readonly cSharpProjectFactory: CSharpProjectFactory;
 
     constructor(
         @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
         @inject(TYPES.projectReferenceTreeDataProvider) projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider,
-        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper) {
+        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper,
+        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
 
         this.projectReferenceHandler = projectReferenceHandler;
         this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
         this.projectReferenceHelper = projectReferenceHelper;
+        this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
     public async execute(resource: vscode.Uri | ProjectReferenceTreeItem): Promise<void> {
 
-        let isFromTreeView: boolean = true;
         let uri: vscode.Uri;
 
         if (resource instanceof vscode.Uri) {
             uri = resource;
-            isFromTreeView = false;
         }
         else { // if (resource instanceof ProjectReferenceTreeItem)
             uri = resource.cSharpProject.uri;
         }
 
+        // TODO: Figure out exactly what this is...
         const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);
 
-        if (!selectedProjectUris || !isFromTreeView) {
+        if (!selectedProjectUris) {
+            return;
+        }
+
+        if (!this.projectReferenceTreeDataProvider.rootElement) {
             return;
         }
 
         const updateCheckTimeout = setInterval(async (): Promise<void> => {
+
+            if (!this.projectReferenceTreeDataProvider.rootElement) {
+                clearInterval(updateCheckTimeout);
+                return;
+            }
 
             const referencesHaveBeenUpdated =
                 await
@@ -59,7 +70,7 @@ export class ManageProjectReferencesCommand implements Command {
                 clearInterval(updateCheckTimeout);
 
                 // TODO: we shouldn't have to reinitialize this project var, right?
-                const project = await this.cSharpProjectFactory.fromUriAsync(uri);
+                const project = await this.cSharpProjectFactory.resolve(this.projectReferenceTreeDataProvider.rootElement.cSharpProject.uri);
 
                 await this.projectReferenceTreeDataProvider.renderTree(project);
             }
