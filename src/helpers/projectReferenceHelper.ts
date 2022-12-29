@@ -53,12 +53,14 @@ export class ProjectReferenceHelper {
 
             return hasBeenUpdated;
         }
-        // Yeah, yeah, I know...
+        // This is the only way - when trying to load the file,
+        // it will throw an exception if it can't
         catch {
             return false;
         }
     }
 
+    // TODO: This needs to move out of here...
     private dotnetReferenceCommandHelper(
         directoryPath: string,
         dotnetCommand: string,

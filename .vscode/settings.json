@@ -11,13 +11,25 @@
     // Spellcheck
     "cSpell.words": [
         "Affordance",
+        "Blazor",
+        "blazorserver",
+        "blazorwasm",
         "copyfiles",
         "inversify",
+        "mstest",
+        "nunit",
         "outfile",
+        "razorclasslib",
+        "reactredux",
         "Retargeting",
         "struct",
         "submenu",
         "submenus",
-        "tmpl"
+        "tmpl",
+        "winforms",
+        "winformslib",
+        "wpfcustomcontrollib",
+        "wpflib",
+        "wpfusercontrollib"
     ]
 }

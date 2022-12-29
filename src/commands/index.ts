@@ -3,6 +3,7 @@ import { AddEnumCommand } from "./addItem/addEnumCommand";
 import { AddInterfaceCommand } from "./addItem/addInterfaceCommand";
 import { AddRecordCommand } from "./addItem/addRecordCommand";
 import { AddStructCommand } from "./addItem/addStructCommand";
+import { AddProjectCommand } from "./addProjectCommand";
 import { ManageProjectReferencesCommand } from "./manageProjectReferencesCommand";
 import { RefreshProjectReferenceTreeViewCommand } from "./projectReference/refreshProjectReferenceTreeViewCommand";
 import { RemoveProjectCommand } from "./removeProjectCommand";
@@ -17,5 +18,6 @@ export {
     ManageProjectReferencesCommand,
     SelectRootProjectCommand,
     RefreshProjectReferenceTreeViewCommand,
-    RemoveProjectCommand
+    RemoveProjectCommand,
+    AddProjectCommand,
 };

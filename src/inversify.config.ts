@@ -9,7 +9,6 @@ import { FileHandler } from './handlers/fileHandler';
 import { TerminalHandler } from './handlers/terminalHandler';
 import { GenericTemplateHandler } from './handlers/genericTemplateHandler';
 import { CSharpProjectFactory } from './handlers/cSharpProjectFactory';
-import { QuickPickItemHelper } from './helpers/quickPickItemHelper';
 import { ProjectReferenceTreeDataProvider } from './features/projectReferenceTree/projectReferenceTreeDataProvider';
 import { ProjectReferenceHelper } from './helpers/projectReferenceHelper';
 
@@ -24,7 +23,6 @@ container.bind<TerminalHandler>(TYPES.terminalHandler).to(TerminalHandler);
 container.bind<GenericTemplateHandler>(TYPES.genericTemplateHandler).to(GenericTemplateHandler);
 container.bind<CSharpProjectFactory>(TYPES.cSharpProjectFactory).to(CSharpProjectFactory);
 
-container.bind<QuickPickItemHelper>(TYPES.quickPickItemHelper).to(QuickPickItemHelper);
 container.bind<ProjectReferenceHelper>(TYPES.projectReferenceHelper).to(ProjectReferenceHelper);
 
 container.bind<ProjectReferenceTreeDataProvider>(TYPES.projectReferenceTreeDataProvider).to(ProjectReferenceTreeDataProvider).inSingletonScope();

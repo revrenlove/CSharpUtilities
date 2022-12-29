@@ -42,9 +42,9 @@ export class ManageProjectReferencesCommand implements Command {
         }
 
         // TODO: Figure out exactly what this is...
-        const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);
+        const projectReferenceUris = await this.projectReferenceHandler.handleReferences(uri);
 
-        if (!selectedProjectUris) {
+        if (!projectReferenceUris) {
             return;
         }
 
@@ -63,7 +63,7 @@ export class ManageProjectReferencesCommand implements Command {
                 await
                     this
                         .projectReferenceHelper
-                        .referencesHaveBeenUpdated(uri, selectedProjectUris);
+                        .referencesHaveBeenUpdated(uri, projectReferenceUris);
 
             if (referencesHaveBeenUpdated) {
 

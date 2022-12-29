@@ -1,13 +1,7 @@
-import * as vscode from 'vscode';
-
-enum ConfirmAction {
-
-    ok = 'Ok',
-    cancel = 'Cancel'
-}
-
+// TODO: Do we need this class even???
 export class Util {
 
+    // TODO: Maybe move this...
     public static capitalizeFirstLetter(s: string) {
 
         switch (s.length) {
@@ -20,16 +14,14 @@ export class Util {
         }
     }
 
-    public static async showWarningConfirm(msg: string): Promise<boolean> {
+    // TODO: Maybe move this...
+    public static validateProjectName(value: string): string | null | undefined {
+        if (/ /.test(value)) {
+            return 'Project name must not contain spaces.';
+        }
 
-        const result =
-            await
-                vscode
-                    .window
-                    .showWarningMessage(msg, ...[ConfirmAction.ok, ConfirmAction.cancel]);
-
-        const isOk = !!result && result === ConfirmAction.ok;
-
-        return isOk;
+        if (!/^[a-z0-9_]/i.test(value)) {
+            return 'Project name must start with a number, letter, or underscore.';
+        }
     }
 }

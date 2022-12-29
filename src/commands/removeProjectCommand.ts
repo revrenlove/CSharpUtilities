@@ -140,20 +140,6 @@ export class RemoveProjectCommand implements Command {
 
     private async referencesHaveBeenUpdated(projects: CSharpProject[], deletedProject: CSharpProject): Promise<boolean> {
 
-        // const x = 
-        //     projects
-        //         .map(async (p) => await this.cSharpProjectFactory.resolve(p.uri))
-        //         .some(p => p.projectReferencePaths.includes(deletedProject.path));
-
-        // projects = await Promise.all(projects.map((async (p): Promise<CSharpProject> => {
-
-        //     const project = await this.cSharpProjectFactory.resolve(p.uri);
-
-        //     return project;
-        // })));
-
-        // const x = projects.some(p => p.projectReferencePaths.includes(deletedProject.path));
-
         for (const project of projects) {
 
             const hasDeletedProject = (await this.cSharpProjectFactory.resolve(project.uri)).projectReferencePaths.includes(deletedProject.path);
