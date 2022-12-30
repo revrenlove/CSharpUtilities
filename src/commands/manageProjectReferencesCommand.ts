@@ -41,7 +41,7 @@ export class ManageProjectReferencesCommand implements Command {
             uri = resource.cSharpProject.uri;
         }
 
-        // TODO: Figure out exactly what this is...
+        // TODO: Figure out exactly what this is... like what it should be named...
         const projectReferenceUris = await this.projectReferenceHandler.handleReferences(uri);
 
         if (!projectReferenceUris) {
@@ -52,6 +52,11 @@ export class ManageProjectReferencesCommand implements Command {
             return;
         }
 
+        this.refreshProjectReferenceTree(uri, projectReferenceUris);
+    }
+
+    // TODO: Set max retry
+    private refreshProjectReferenceTree(uri: vscode.Uri, projectReferenceUris: vscode.Uri[]): void {
         const updateCheckTimeout = setInterval(async (): Promise<void> => {
 
             if (!this.projectReferenceTreeDataProvider.rootElement) {

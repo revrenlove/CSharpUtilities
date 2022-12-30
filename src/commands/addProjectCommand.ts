@@ -6,6 +6,8 @@ import TYPES from '../types';
 import { ProjectTemplate, ProjectTemplateHelper, WorkspaceQuickPickItem } from '../helpers/projectTemplateHelper';
 import { Util } from '../util';
 
+// TODO: Probably refactor this class...
+// TODO: We need a place to specify the framework... possibly a setting to set a default???
 @injectable()
 export class AddProjectCommand implements Command {
 
@@ -39,11 +41,9 @@ export class AddProjectCommand implements Command {
             commandPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
         }
         else {
-
             currentStep++;
             totalStepQty++;
 
-            // Get folder...
             const workspaceFolder = await this.getWorkspaceFolder(currentStep, totalStepQty);
 
             if (!workspaceFolder) {
