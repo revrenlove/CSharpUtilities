@@ -60,7 +60,6 @@ export class ProjectReferenceHelper {
         }
     }
 
-    // TODO: This needs to move out of here...
     private dotnetReferenceCommandHelper(
         directoryPath: string,
         dotnetCommand: string,

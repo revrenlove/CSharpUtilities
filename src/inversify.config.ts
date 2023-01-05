@@ -11,6 +11,7 @@ import { GenericTemplateHandler } from './handlers/genericTemplateHandler';
 import { CSharpProjectFactory } from './handlers/cSharpProjectFactory';
 import { ProjectReferenceTreeDataProvider } from './features/projectReferenceTree/projectReferenceTreeDataProvider';
 import { ProjectReferenceHelper } from './helpers/projectReferenceHelper';
+import { AddProjectHandler } from './features/addProject/addProjectHandler';
 
 const container = new Container();
 
@@ -22,6 +23,7 @@ container.bind<FileHandler>(TYPES.fileHandler).to(FileHandler);
 container.bind<TerminalHandler>(TYPES.terminalHandler).to(TerminalHandler);
 container.bind<GenericTemplateHandler>(TYPES.genericTemplateHandler).to(GenericTemplateHandler);
 container.bind<CSharpProjectFactory>(TYPES.cSharpProjectFactory).to(CSharpProjectFactory);
+container.bind<AddProjectHandler>(TYPES.addProjectHandler).to(AddProjectHandler);
 
 container.bind<ProjectReferenceHelper>(TYPES.projectReferenceHelper).to(ProjectReferenceHelper);
 

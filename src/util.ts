@@ -1,7 +1,7 @@
-// TODO: Do we need this class even???
+import * as vscode from 'vscode';
+
 export class Util {
 
-    // TODO: Maybe move this...
     public static capitalizeFirstLetter(s: string) {
 
         switch (s.length) {
@@ -14,7 +14,6 @@ export class Util {
         }
     }
 
-    // TODO: Maybe move this...
     public static validateProjectName(value: string): string | null | undefined {
         if (/ /.test(value)) {
             return 'Project name must not contain spaces.';
@@ -23,5 +22,31 @@ export class Util {
         if (!/^[a-z0-9_]/i.test(value)) {
             return 'Project name must start with a number, letter, or underscore.';
         }
+    }
+
+    public static setInterval(
+        callback: () => Promise<boolean>,
+        errorMessage: string,
+        maxRetry: number = 5,
+        ms: number = 1000): void {
+
+        let currentTry = 0;
+
+        const timer = setInterval(async (): Promise<void> => {
+
+            if (currentTry === maxRetry) {
+                clearInterval(timer);
+
+                if (errorMessage) {
+                    await vscode.window.showErrorMessage(errorMessage);
+                }
+            }
+
+            currentTry++;
+
+            if (await callback()) {
+                clearInterval(timer);
+            }
+        }, ms);
     }
 }

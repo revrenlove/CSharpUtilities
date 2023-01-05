@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import { ProjectReferenceTreeDataProvider } from "../../features/projectReferenceTree/projectReferenceTreeDataProvider";
-import TYPES from "../../types";
-import { Command } from "../command";
+import { ProjectReferenceTreeDataProvider } from "../features/projectReferenceTree/projectReferenceTreeDataProvider";
+import TYPES from "../types";
+import { Command } from "./command";
 
 @injectable()
 export class RefreshProjectReferenceTreeViewCommand implements Command {

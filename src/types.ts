@@ -8,6 +8,7 @@ const TYPES = {
     genericTemplateHandler: Symbol('GenericTemplateHandler'),
     cSharpProjectFactory: Symbol('CSharpProjectFactory'),
     projectReferenceTreeDataProvider: Symbol('ProjectReferenceTreeDataProvider'),
+    addProjectHandler: Symbol('AddProjectHandler'),
 };
 
 export default TYPES;

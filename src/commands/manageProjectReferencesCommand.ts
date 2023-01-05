@@ -7,6 +7,7 @@ import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/proje
 import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
 import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
+import { Util } from '../util';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
@@ -55,13 +56,12 @@ export class ManageProjectReferencesCommand implements Command {
         this.refreshProjectReferenceTree(uri, projectReferenceUris);
     }
 
-    // TODO: Set max retry
     private refreshProjectReferenceTree(uri: vscode.Uri, projectReferenceUris: vscode.Uri[]): void {
-        const updateCheckTimeout = setInterval(async (): Promise<void> => {
+
+        Util.setInterval(async (): Promise<boolean> => {
 
             if (!this.projectReferenceTreeDataProvider.rootElement) {
-                clearInterval(updateCheckTimeout);
-                return;
+                return false;
             }
 
             const referencesHaveBeenUpdated =
@@ -71,14 +71,15 @@ export class ManageProjectReferencesCommand implements Command {
                         .referencesHaveBeenUpdated(uri, projectReferenceUris);
 
             if (referencesHaveBeenUpdated) {
-
-                clearInterval(updateCheckTimeout);
-
                 // TODO: we shouldn't have to reinitialize this project var, right?
                 const project = await this.cSharpProjectFactory.resolve(this.projectReferenceTreeDataProvider.rootElement.cSharpProject.uri);
 
                 await this.projectReferenceTreeDataProvider.renderTree(project);
+
+                return true;
             }
-        }, 1000);
+
+            return false;
+        }, 'Unable to verify references were updated. Check the `dotnet` terminal for details.');
     }
 }
