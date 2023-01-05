@@ -125,7 +125,7 @@ export class GenericTemplateHandler {
 
         const projectFileUri = vscode.Uri.file(projectFilePath);
 
-        const cSharpProject = await this.cSharpProjectFactory.fromUriAsync(projectFileUri);
+        const cSharpProject = await this.cSharpProjectFactory.resolve(projectFileUri);
 
         let namespace = cSharpProject.rootNamespace;
 

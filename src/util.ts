@@ -1,11 +1,5 @@
 import * as vscode from 'vscode';
 
-enum ConfirmAction {
-
-    ok = 'Ok',
-    cancel = 'Cancel'
-}
-
 export class Util {
 
     public static capitalizeFirstLetter(s: string) {
@@ -20,16 +14,39 @@ export class Util {
         }
     }
 
-    public static async showWarningConfirm(msg: string): Promise<boolean> {
+    public static validateProjectName(value: string): string | null | undefined {
+        if (/ /.test(value)) {
+            return 'Project name must not contain spaces.';
+        }
 
-        const result =
-            await
-                vscode
-                    .window
-                    .showWarningMessage(msg, ...[ConfirmAction.ok, ConfirmAction.cancel]);
+        if (!/^[a-z0-9_]/i.test(value)) {
+            return 'Project name must start with a number, letter, or underscore.';
+        }
+    }
 
-        const isOk = !!result && result === ConfirmAction.ok;
+    public static setInterval(
+        callback: () => Promise<boolean>,
+        errorMessage: string,
+        maxRetry: number = 5,
+        ms: number = 1000): void {
 
-        return isOk;
+        let currentTry = 0;
+
+        const timer = setInterval(async (): Promise<void> => {
+
+            if (currentTry === maxRetry) {
+                clearInterval(timer);
+
+                if (errorMessage) {
+                    await vscode.window.showErrorMessage(errorMessage);
+                }
+            }
+
+            currentTry++;
+
+            if (await callback()) {
+                clearInterval(timer);
+            }
+        }, ms);
     }
 }
