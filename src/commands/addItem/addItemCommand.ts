@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { injectable } from "inversify";
-import { GenericTemplateHandler } from "../../handlers/genericTemplateHandler";
 import container from "../../inversify.config";
-import { TemplateType } from "../../templates/templateType";
 import TYPES from "../../types";
+import { injectable } from "inversify";
 import { Command } from "../command";
+import { GenericTemplateHandler } from "../../handlers/genericTemplateHandler";
+import { TemplateType } from "../../templates/templateType";
 
 @injectable()
 export abstract class AddItemCommand implements Command {
