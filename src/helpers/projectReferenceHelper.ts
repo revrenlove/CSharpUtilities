@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
+import TYPES from "../types";
 import { inject, injectable } from 'inversify';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
-import TYPES from "../types";
 import { TerminalHandler } from '../handlers/terminalHandler';
 
 @injectable()

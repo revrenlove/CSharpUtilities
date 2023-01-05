@@ -9,6 +9,7 @@ import path = require('path');
 import { CSharpProject } from '../handlers/cSharpProject';
 import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
 
+// TODO: Make this lean... pull all the functionality out to it's own thing in a feature folder...
 @injectable()
 export class RemoveProjectCommand implements Command {
 

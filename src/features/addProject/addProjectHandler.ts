@@ -7,6 +7,7 @@ import { Util } from '../../util';
 import TYPES from '../../types';
 import { TerminalHandler } from '../../handlers/terminalHandler';
 
+// TODO: Make sure this is actually clean...
 @injectable()
 export class AddProjectHandler {
 

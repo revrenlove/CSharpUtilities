@@ -9,6 +9,7 @@ import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
 import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 import { Util } from '../util';
 
+// TODO: Make this lean... pull all the functionality out to it's own thing in a feature folder...
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
 
