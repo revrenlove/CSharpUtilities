@@ -15,6 +15,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      # This action will throw a warning...
+      # https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
       - name: get-npm-version pre
         id: package-version-pre
         uses: martinbeentjes/npm-get-version-action@master
@@ -34,6 +36,8 @@ jobs:
           default: patch
           bump-policy: "ignore"
 
+      # This action will throw a warning...
+      # https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
       - name: get-npm-version post
         id: package-version-post
         uses: martinbeentjes/npm-get-version-action@master
