@@ -17,7 +17,7 @@ jobs:
 
       - name: get-npm-version pre
         id: package-version-pre
-        uses: martinbeentjes/npm-get-version-action@master
+        uses: martinbeentjes/npm-get-version-action@main
 
       - name: Version Pre
         run: echo ${{ steps.package-version-pre.outputs.current-version}}
@@ -36,7 +36,7 @@ jobs:
 
       - name: get-npm-version post
         id: package-version-post
-        uses: martinbeentjes/npm-get-version-action@master
+        uses: martinbeentjes/npm-get-version-action@main
 
       - name: Version Post
         run: echo ${{ steps.package-version-post.outputs.current-version}}
