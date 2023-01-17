@@ -3,29 +3,31 @@ import * as path from 'path';
 import TYPES from '../types';
 import { CsProjFileQuickPickItem } from './csProjFileQuickPickItem';
 import { inject, injectable } from 'inversify';
-import { TerminalHandler } from './terminalHandler';
 import { TreeNode } from '../framework/treeNode';
 import { CSharpProject } from './cSharpProject';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
+import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
 
 @injectable()
 export class ProjectReferenceHandler {
 
-    private readonly terminalHandler: TerminalHandler;
+    private readonly projectReferenceHelper: ProjectReferenceHelper;
     private readonly cSharpProjectFactory: CSharpProjectFactory;
 
     public constructor(
-        @inject(TYPES.terminalHandler) terminalHandler: TerminalHandler,
-        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
+        @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory,
+        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper) {
 
-        this.terminalHandler = terminalHandler;
         this.cSharpProjectFactory = cSharpProjectFactory;
+        this.projectReferenceHelper = projectReferenceHelper;
     }
 
     // TODO: Refactor this so it's not so fucking long...
+    // TODO: Also... What does "handleReferences" mean? In what context? Should be renamed...
+    // TODO: We need to handle the case when there is are incompatible frameworks...
     public async handleReferences(contextualProjectUri: vscode.Uri): Promise<vscode.Uri[] | undefined> {
 
-        const contextualProject = await this.cSharpProjectFactory.fromUriAsync(contextualProjectUri);
+        const contextualProject = await this.cSharpProjectFactory.resolve(contextualProjectUri);
 
         const otherWorkspaceProjectUris = await this.getWorkspaceProjectUris(contextualProjectUri);
 
@@ -91,12 +93,12 @@ export class ProjectReferenceHandler {
 
         if (pathsOfProjectsToAdd.length > 0) {
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'add', pathsOfProjectsToAdd);
+            this.projectReferenceHelper.addReference(directoryPath, pathsOfProjectsToAdd);
         }
 
         if (pathsOfProjectsToRemove.length > 0) {
 
-            this.dotnetReferenceCommandHelper(directoryPath, 'remove', pathsOfProjectsToRemove);
+            this.projectReferenceHelper.removeReference(directoryPath, pathsOfProjectsToRemove);
         }
 
         return selectedProjects.map(p => p.uri);
@@ -108,7 +110,7 @@ export class ProjectReferenceHandler {
 
         const nodePromises = project.projectReferencePaths.map(async path => {
 
-            const childProject = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(path));
+            const childProject = await this.cSharpProjectFactory.resolve(vscode.Uri.file(path));
 
             // let child = new TreeNode(childProject, wrapperFauxProjectNode);
             let child = new TreeNode(childProject, node);
@@ -173,24 +175,6 @@ export class ProjectReferenceHandler {
         return pathsOfProjectsToRemove;
     }
 
-    private dotnetReferenceCommandHelper(
-        directoryPath: string,
-        dotnetCommand: string,
-        projectPaths: string[]): void {
-
-        const command = 'dotnet';
-        const param = 'reference';
-
-        this
-            .terminalHandler
-            .executeCommand(
-                directoryPath,
-                command,
-                dotnetCommand,
-                param,
-                ...projectPaths.map(p => `"${p}"`));
-    }
-
     // TODO: Eventually we need to display which projects are the culprits... That's a new ticket...
     private async getRootTreeNode(
         project: CSharpProject,
@@ -218,7 +202,7 @@ export class ProjectReferenceHandler {
 
         for (let i = 0; i < node.children.length; i++) {
 
-            const project = await this.cSharpProjectFactory.fromUriAsync(vscode.Uri.file(node.children[i].value));
+            const project = await this.cSharpProjectFactory.resolve(vscode.Uri.file(node.children[i].value));
 
             node.children[i].children =
                 project

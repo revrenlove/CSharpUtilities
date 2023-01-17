@@ -5,6 +5,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { inject, injectable } from 'inversify';
 import { FileHandler } from './fileHandler';
 import { CSharpProject } from './cSharpProject';
+import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
 
 // TODO: Move these definitions into their own lib
 //          Perhaps extend the parser...
@@ -24,7 +25,30 @@ export class CSharpProjectFactory {
         this.parser = new XMLParser({ ignoreAttributes: false });
     }
 
-    public async fromUriAsync(uri: vscode.Uri): Promise<CSharpProject> {
+    public async resolve(input: string | vscode.Uri | ProjectReferenceTreeItem | CSharpProject): Promise<CSharpProject> {
+
+        if (input instanceof CSharpProject) {
+            return input;
+        }
+
+        if (input instanceof ProjectReferenceTreeItem) {
+            return input.cSharpProject;
+        }
+
+        let uri: vscode.Uri;
+
+        if (typeof input === 'string') {
+            uri = vscode.Uri.file(input);
+        } else {
+            uri = input;
+        }
+
+        const cSharpProject = await this.fromUriAsync(uri);
+
+        return cSharpProject;
+    }
+
+    private async fromUriAsync(uri: vscode.Uri): Promise<CSharpProject> {
 
         const projectName = path.parse(uri.fsPath).name;
 

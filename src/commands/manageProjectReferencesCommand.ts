@@ -3,22 +3,32 @@ import TYPES from '../types';
 import { inject, injectable } from 'inversify';
 import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
 import { Command } from './command';
-import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
 import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
+import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
+import { ProjectReferenceHelper } from '../helpers/projectReferenceHelper';
+import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
+import { Util } from '../util';
 
+// TODO: Make this lean... pull all the functionality out to it's own thing in a feature folder...
 @injectable()
 export class ManageProjectReferencesCommand implements Command {
 
     public readonly id: string = 'c-sharp-utilities.manageProjectReferences';
 
     private readonly projectReferenceHandler: ProjectReferenceHandler;
+    private readonly projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider;
+    private readonly projectReferenceHelper: ProjectReferenceHelper;
     private readonly cSharpProjectFactory: CSharpProjectFactory;
 
     constructor(
         @inject(TYPES.projectReferenceHandler) projectReferenceHandler: ProjectReferenceHandler,
+        @inject(TYPES.projectReferenceTreeDataProvider) projectReferenceTreeDataProvider: ProjectReferenceTreeDataProvider,
+        @inject(TYPES.projectReferenceHelper) projectReferenceHelper: ProjectReferenceHelper,
         @inject(TYPES.cSharpProjectFactory) cSharpProjectFactory: CSharpProjectFactory) {
 
         this.projectReferenceHandler = projectReferenceHandler;
+        this.projectReferenceTreeDataProvider = projectReferenceTreeDataProvider;
+        this.projectReferenceHelper = projectReferenceHelper;
         this.cSharpProjectFactory = cSharpProjectFactory;
     }
 
@@ -33,43 +43,44 @@ export class ManageProjectReferencesCommand implements Command {
             uri = resource.cSharpProject.uri;
         }
 
-        const selectedProjectUris = await this.projectReferenceHandler.handleReferences(uri);
+        // TODO: Figure out exactly what this is... like what it should be named...
+        const projectReferenceUris = await this.projectReferenceHandler.handleReferences(uri);
 
-        // TODO: add a conditional to return if NOT on the reference tree view
-        if (!selectedProjectUris) {
+        if (!projectReferenceUris) {
             return;
         }
 
-        const updateCheckTimeout = setInterval(async (): Promise<void> => {
+        if (!this.projectReferenceTreeDataProvider.rootElement) {
+            return;
+        }
 
-            const referencesHaveBeenUpdated = await this.referencesHaveBeenUpdated(uri, selectedProjectUris);
-
-            if (referencesHaveBeenUpdated) {
-
-                clearInterval(updateCheckTimeout);
-
-                // TODO: figure out how to not have this be a magic string...
-                await vscode.commands.executeCommand('c-sharp-utilities.refreshProjectReferenceTreeViewCommand');
-            }
-        }, 1000);
+        this.refreshProjectReferenceTree(uri, projectReferenceUris);
     }
 
-    private async referencesHaveBeenUpdated(projectUri: vscode.Uri, referencedProjectsUris: vscode.Uri[]): Promise<boolean> {
+    private refreshProjectReferenceTree(uri: vscode.Uri, projectReferenceUris: vscode.Uri[]): void {
 
-        try {
-            const project = await this.cSharpProjectFactory.fromUriAsync(projectUri);
+        Util.setInterval(async (): Promise<boolean> => {
 
-            if (project.projectReferenceUris.length !== referencedProjectsUris.length) {
+            if (!this.projectReferenceTreeDataProvider.rootElement) {
                 return false;
             }
 
-            const hasBeenUpdated = project.projectReferenceUris.every(p => referencedProjectsUris.some(r => r.fsPath === p.fsPath));
+            const referencesHaveBeenUpdated =
+                await
+                    this
+                        .projectReferenceHelper
+                        .referencesHaveBeenUpdated(uri, projectReferenceUris);
 
-            return hasBeenUpdated;
-        }
-        // Yeah, yeah, I know...
-        catch {
+            if (referencesHaveBeenUpdated) {
+                // TODO: we shouldn't have to reinitialize this project var, right?
+                const project = await this.cSharpProjectFactory.resolve(this.projectReferenceTreeDataProvider.rootElement.cSharpProject.uri);
+
+                await this.projectReferenceTreeDataProvider.renderTree(project);
+
+                return true;
+            }
+
             return false;
-        }
+        }, 'Unable to verify references were updated. Check the `dotnet` terminal for details.');
     }
 }

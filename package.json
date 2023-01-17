@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "1.4.0",
+	"version": "1.6.1",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
@@ -57,17 +57,30 @@
 			},
 			{
 				"command": "c-sharp-utilities.selectRootProject",
-				"title": "Select Root Project..."
+				"title": "Select Root Project...",
+				"category": "C# Utilities"
 			},
 			{
 				"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
-				"title": "Refresh",
-				"icon": "$(refresh)"
+				"title": "Refresh Project Reference Tree",
+				"icon": "$(refresh)",
+				"category": "C# Utilities"
 			},
 			{
 				"command": "c-sharp-utilities.clearProjectReferenceExplorer",
-				"title": "Clear",
-				"icon": "$(clear-all)"
+				"title": "Clear Project Reference Tree",
+				"icon": "$(clear-all)",
+				"category": "C# Utilities"
+			},
+			{
+				"command": "c-sharp-utilities.removeProjectCommand",
+				"title": "Remove Project",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "c-sharp-utilities.addProjectCommand",
+				"title": "Add C# Project",
+				"category": "C# Utilities"
 			}
 		],
 		"menus": {
@@ -79,6 +92,14 @@
 				{
 					"command": "c-sharp-utilities.manageProjectReferences",
 					"when": "resourceExtname == .csproj"
+				},
+				{
+					"command": "c-sharp-utilities.removeProjectCommand",
+					"when": "resourceExtname == .csproj"
+				},
+				{
+					"command": "c-sharp-utilities.addProjectCommand",
+					"when": "explorerResourceIsFolder"
 				}
 			],
 			"cSharp.addItem": [
@@ -118,6 +139,14 @@
 				{
 					"command": "c-sharp-utilities.addStruct",
 					"when": "false"
+				},
+				{
+					"command": "c-sharp-utilities.removeProjectCommand",
+					"when": "false"
+				},
+				{
+					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -135,6 +164,11 @@
 			"view/item/context": [
 				{
 					"command": "c-sharp-utilities.manageProjectReferences",
+					"when": "view == projectReferences",
+					"group": "inline"
+				},
+				{
+					"command": "c-sharp-utilities.removeProjectCommand",
 					"when": "view == projectReferences",
 					"group": "inline"
 				}
