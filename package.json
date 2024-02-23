@@ -14,7 +14,7 @@
 	},
 	"icon": "assets/images/logo.png",
 	"publisher": "revrenlove",
-	"version": "1.4.0",
+	"version": "1.6.0",
 	"engines": {
 		"vscode": "^1.65.0"
 	},
@@ -173,7 +173,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"vscode:prepublish": "npm run esbuild-base -- --minify && npm run copy-static",
 		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
 		"esbuild": "npm run esbuild-base -- --sourcemap && npm run copy-static",
 		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
