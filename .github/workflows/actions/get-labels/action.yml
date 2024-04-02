@@ -1,0 +1,12 @@
+name: "Get Labels"
+desctription: "Get's labels from PR associated with latest push to `main`"
+inputs:
+    github-token:
+        description: "Super Secret Github Token"
+        required: true
+outputs:
+    label-names:
+        description: "JSON string containing array of label names associated with pull request"
+runs:
+    using: "node20"
+    main: "index.mjs"

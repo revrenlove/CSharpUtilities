@@ -1,0 +1,16 @@
+name: "Bump Version"
+description: "Bumps the version in package.json based on labels attached to PR, then creates, merges, and closes a PR for update. "
+inputs:
+    github-token:
+        description: "Super Secret Github Token"
+        required: true
+    current-version:
+        description: "Current version in package.json"
+        required: true
+    label-names:
+        description: "Names of labels associated with PR"
+        required: true
+
+runs:
+    using: "node20"
+    main: "index.mjs"
