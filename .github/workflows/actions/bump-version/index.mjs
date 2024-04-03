@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import * as github from "@actions/github";
 import fetch from "node-fetch";
 import * as fs from "fs";
 import { Version } from "./version.mjs";
@@ -44,8 +45,11 @@ async function updatePackageJson(version) {
 }
 
 async function getPackageJson() {
+    const owner = github.context.repo.owner;
+    const repo = github.context.repo.repo;
+
     const response = await fetch(
-        "https://raw.githubusercontent.com/revrenlove/gh-action-vscode-extension/main/package.json"
+        `https://raw.githubusercontent.com/${owner}/${repo}/main/package.json`
     );
 
     const packageJson = await response.json();

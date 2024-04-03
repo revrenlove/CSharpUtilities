@@ -186,7 +186,7 @@
 	"devDependencies": {
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.0",
-		"@types/node": "^17.0.21",
+		"@types/node": "18.x",
 		"@types/vscode": "^1.65.0",
 		"@typescript-eslint/eslint-plugin": "^5.14.0",
 		"@typescript-eslint/parser": "^5.14.0",
@@ -204,6 +204,10 @@
 		"inversify": "^6.0.1",
 		"reflect-metadata": "^0.1.13",
 		"ts-md5": "^1.2.11",
-		"util": "^0.12.4"
+		"util": "^0.12.4",
+		"@actions/core": "^1.10.1",
+		"@actions/exec": "^1.1.1",
+		"@actions/github": "^6.0.0",
+		"node-fetch": "^3.3.2"
 	}
 }
