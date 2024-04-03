@@ -1,213 +1,213 @@
 {
-	"name": "c-sharp-utilities",
-	"displayName": "C# Utilities",
-	"description": "Workflow enhancements for C# development",
-	"keywords": [
-		"c#",
-		"csharp",
-		".net",
-		"dotnet"
-	],
-	"license": "MIT",
-	"repository": {
-		"url": "https://github.com/revrenlove/CSharpUtilities"
-	},
-	"icon": "assets/images/logo.png",
-	"publisher": "revrenlove",
-	"version": "1.6.0",
-	"engines": {
-		"vscode": "^1.65.0"
-	},
-	"bugs": {
-		"url": "https://github.com/revrenlove/CSharpUtilities/issues"
-	},
-	"categories": [
-		"Programming Languages"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/main.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "c-sharp-utilities.addClass",
-				"title": "Class"
-			},
-			{
-				"command": "c-sharp-utilities.addInterface",
-				"title": "Interface"
-			},
-			{
-				"command": "c-sharp-utilities.addRecord",
-				"title": "Record"
-			},
-			{
-				"command": "c-sharp-utilities.addEnum",
-				"title": "Enum"
-			},
-			{
-				"command": "c-sharp-utilities.addStruct",
-				"title": "Struct"
-			},
-			{
-				"command": "c-sharp-utilities.manageProjectReferences",
-				"title": "Manage Project References...",
-				"icon": "$(edit)"
-			},
-			{
-				"command": "c-sharp-utilities.selectRootProject",
-				"title": "Select Root Project..."
-			},
-			{
-				"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
-				"title": "Refresh",
-				"icon": "$(refresh)"
-			},
-			{
-				"command": "c-sharp-utilities.clearProjectReferenceExplorer",
-				"title": "Clear",
-				"icon": "$(clear-all)"
-			}
-		],
-		"menus": {
-			"explorer/context": [
-				{
-					"submenu": "cSharp.addItem",
-					"when": "resourceExtname == .csproj || resourceExtname == .cs || explorerResourceIsFolder"
-				},
-				{
-					"command": "c-sharp-utilities.manageProjectReferences",
-					"when": "resourceExtname == .csproj"
-				}
-			],
-			"cSharp.addItem": [
-				{
-					"command": "c-sharp-utilities.addClass"
-				},
-				{
-					"command": "c-sharp-utilities.addInterface"
-				},
-				{
-					"command": "c-sharp-utilities.addRecord"
-				},
-				{
-					"command": "c-sharp-utilities.addEnum"
-				},
-				{
-					"command": "c-sharp-utilities.addStruct"
-				}
-			],
-			"commandPalette": [
-				{
-					"command": "c-sharp-utilities.addClass",
-					"when": "false"
-				},
-				{
-					"command": "c-sharp-utilities.addInterface",
-					"when": "false"
-				},
-				{
-					"command": "c-sharp-utilities.addRecord",
-					"when": "false"
-				},
-				{
-					"command": "c-sharp-utilities.addEnum",
-					"when": "false"
-				},
-				{
-					"command": "c-sharp-utilities.addStruct",
-					"when": "false"
-				}
-			],
-			"view/title": [
-				{
-					"command": "c-sharp-utilities.clearProjectReferenceExplorer",
-					"when": "view == projectReferences",
-					"group": "navigation"
-				},
-				{
-					"command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
-					"when": "view == projectReferences",
-					"group": "navigation"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "c-sharp-utilities.manageProjectReferences",
-					"when": "view == projectReferences",
-					"group": "inline"
-				}
-			]
-		},
-		"submenus": [
-			{
-				"id": "cSharp.addItem",
-				"label": "Add C# Item..."
-			}
-		],
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "project-reference-explorer",
-					"title": "Project Reference Explorer",
-					"icon": "./assets/images/logo-mono-sidebar.png"
-				}
-			]
-		},
-		"views": {
-			"project-reference-explorer": [
-				{
-					"id": "projectReferences",
-					"name": "Project References",
-					"icon": "./assets/images/logo-mono-sidebar.png",
-					"contextualTitle": "Project Reference Explorer"
-				}
-			]
-		},
-		"viewsWelcome": [
-			{
-				"view": "projectReferences",
-				"contents": "[Select Root Project...](command:c-sharp-utilities.selectRootProject)"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run esbuild-base -- --minify && npm run copy-static",
-		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-		"esbuild": "npm run esbuild-base -- --sourcemap && npm run copy-static",
-		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-		"test-compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
-		"deploy": "vsce publish",
-		"package": "vsce package"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.0",
-		"@types/node": "18.x",
-		"@types/vscode": "^1.65.0",
-		"@typescript-eslint/eslint-plugin": "^5.14.0",
-		"@typescript-eslint/parser": "^5.14.0",
-		"@vscode/test-electron": "^2.1.3",
-		"copyfiles": "^2.4.1",
-		"esbuild": "^0.14.29",
-		"eslint": "^8.10.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.1",
-		"typescript": "^4.6.2",
-		"vsce": "^2.6.7"
-	},
-	"dependencies": {
-		"fast-xml-parser": "^4.0.6",
-		"inversify": "^6.0.1",
-		"reflect-metadata": "^0.1.13",
-		"ts-md5": "^1.2.11",
-		"util": "^0.12.4",
-		"@actions/core": "^1.10.1",
-		"@actions/exec": "^1.1.1",
-		"@actions/github": "^6.0.0",
-		"node-fetch": "^3.3.2"
-	}
+  "name": "c-sharp-utilities",
+  "displayName": "C# Utilities",
+  "description": "Workflow enhancements for C# development",
+  "keywords": [
+    "c#",
+    "csharp",
+    ".net",
+    "dotnet"
+  ],
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/revrenlove/CSharpUtilities"
+  },
+  "icon": "assets/images/logo.png",
+  "publisher": "revrenlove",
+  "version": "1.6.1",
+  "engines": {
+    "vscode": "^1.65.0"
+  },
+  "bugs": {
+    "url": "https://github.com/revrenlove/CSharpUtilities/issues"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "c-sharp-utilities.addClass",
+        "title": "Class"
+      },
+      {
+        "command": "c-sharp-utilities.addInterface",
+        "title": "Interface"
+      },
+      {
+        "command": "c-sharp-utilities.addRecord",
+        "title": "Record"
+      },
+      {
+        "command": "c-sharp-utilities.addEnum",
+        "title": "Enum"
+      },
+      {
+        "command": "c-sharp-utilities.addStruct",
+        "title": "Struct"
+      },
+      {
+        "command": "c-sharp-utilities.manageProjectReferences",
+        "title": "Manage Project References...",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "c-sharp-utilities.selectRootProject",
+        "title": "Select Root Project..."
+      },
+      {
+        "command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "c-sharp-utilities.clearProjectReferenceExplorer",
+        "title": "Clear",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "cSharp.addItem",
+          "when": "resourceExtname == .csproj || resourceExtname == .cs || explorerResourceIsFolder"
+        },
+        {
+          "command": "c-sharp-utilities.manageProjectReferences",
+          "when": "resourceExtname == .csproj"
+        }
+      ],
+      "cSharp.addItem": [
+        {
+          "command": "c-sharp-utilities.addClass"
+        },
+        {
+          "command": "c-sharp-utilities.addInterface"
+        },
+        {
+          "command": "c-sharp-utilities.addRecord"
+        },
+        {
+          "command": "c-sharp-utilities.addEnum"
+        },
+        {
+          "command": "c-sharp-utilities.addStruct"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "c-sharp-utilities.addClass",
+          "when": "false"
+        },
+        {
+          "command": "c-sharp-utilities.addInterface",
+          "when": "false"
+        },
+        {
+          "command": "c-sharp-utilities.addRecord",
+          "when": "false"
+        },
+        {
+          "command": "c-sharp-utilities.addEnum",
+          "when": "false"
+        },
+        {
+          "command": "c-sharp-utilities.addStruct",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "c-sharp-utilities.clearProjectReferenceExplorer",
+          "when": "view == projectReferences",
+          "group": "navigation"
+        },
+        {
+          "command": "c-sharp-utilities.refreshProjectReferenceTreeViewCommand",
+          "when": "view == projectReferences",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "c-sharp-utilities.manageProjectReferences",
+          "when": "view == projectReferences",
+          "group": "inline"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "cSharp.addItem",
+        "label": "Add C# Item..."
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "project-reference-explorer",
+          "title": "Project Reference Explorer",
+          "icon": "./assets/images/logo-mono-sidebar.png"
+        }
+      ]
+    },
+    "views": {
+      "project-reference-explorer": [
+        {
+          "id": "projectReferences",
+          "name": "Project References",
+          "icon": "./assets/images/logo-mono-sidebar.png",
+          "contextualTitle": "Project Reference Explorer"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "projectReferences",
+        "contents": "[Select Root Project...](command:c-sharp-utilities.selectRootProject)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run esbuild-base -- --minify && npm run copy-static",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap && npm run copy-static",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "copy-static": "copyfiles -u 1 ./**/*.tmpl ./out",
+    "deploy": "vsce publish",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.65.0",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "@vscode/test-electron": "^2.1.3",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.14.29",
+    "eslint": "^8.10.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.1",
+    "typescript": "^4.6.2",
+    "vsce": "^2.6.7"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.0.6",
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13",
+    "ts-md5": "^1.2.11",
+    "util": "^0.12.4",
+    "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^6.0.0",
+    "node-fetch": "^3.3.2"
+  }
 }
