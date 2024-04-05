@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.8.0] - 2024/04/04
+
+- Extension now activates once VS Code is done starting up.
+
 ## [1.2.0] - 2022/06/19
 
 - Adding project reference tree.
