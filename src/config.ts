@@ -1,16 +1,7 @@
-import { injectable } from "inversify";
+import * as configJson from './config.json';
 
-@injectable()
 export class Config {
-
-    private config: Config;
-
-    constructor() {
-
-    }
-
-    // TODO: Remove the "generic" shit...
-    genericTemplatePath: string;
-    fileScopedNamespaceTemplatePath: string;
-    namespaceEncapsulatedTemplatePath: string;
+    public static readonly genericTemplatePath = `${__dirname}/${configJson.genericTemplatePath}`;
+    public static readonly fileScopedNamespaceTemplatePath = `${__dirname}/${configJson.fileScopedNamespaceTemplatePath}`;
+    public static readonly namespaceEncapsulatedTemplatePath = `${__dirname}/${configJson.namespaceEncapsulatedTemplatePath}`;
 }
