@@ -8,7 +8,9 @@ import { Util } from '../util';
 import { inject, injectable } from 'inversify';
 import { FileHandler } from './fileHandler';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
+import VSCodeConfiguration from '../vscode-configuration';
 
+// TODO: Rename this...
 @injectable()
 export class GenericTemplateHandler {
 
@@ -45,6 +47,7 @@ export class GenericTemplateHandler {
             namespace: namespace,
             objectType: TemplateType[templateType],
             objectName: objectName,
+            usings: [],
         };
 
         const fileContentsString = await this.populateTemplate(template);
@@ -180,6 +183,7 @@ export class GenericTemplateHandler {
 
     private async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
 
+        this.getTemplatePath();
         const templateUri = vscode.Uri.file(Config.genericTemplatePath);
 
         let template = await this.fileHandler.readFile(templateUri);
@@ -194,14 +198,29 @@ export class GenericTemplateHandler {
         return template;
     }
 
+    // TODO: This works as a blueprint... this config shit really needs its own handler...
+    private getTemplatePath(): string {
+
+        const config = vscode.workspace.getConfiguration('c-sharp-utilities.newItemTemplate');
+
+        const x = config.get('fileScopedNamespace');
+
+        console.log(config);
+
+        const y = VSCodeConfiguration.isFileScopedNamespace;
+
+        return "";
+    }
+
+    // TODO: JE - Fix this...
     private async openEditor(uri: vscode.Uri): Promise<void> {
 
         const editor = await vscode.window.showTextDocument(uri);
 
-        const newSelection = new vscode.Selection(
-            Config.genericTemplateCursorPosition,
-            Config.genericTemplateCursorPosition);
+        // const newSelection = new vscode.Selection(
+        //     Config.genericTemplateCursorPosition,
+        //     Config.genericTemplateCursorPosition);
 
-        editor.selection = newSelection;
+        // editor.selection = newSelection;
     }
 }

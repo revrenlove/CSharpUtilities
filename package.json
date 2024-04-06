@@ -70,6 +70,36 @@
         "icon": "$(clear-all)"
       }
     ],
+    "configuration": {
+      "title": "C# Utilities",
+      "properties": {
+        "c-sharp-utilities.newItemTemplate.fileScopedNamespace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use File Scoped Namespaces for new C# items.",
+          "order": 0
+        },
+        "c-sharp-utilities.newItemTemplate.includeUsingStatements": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include specified using statements for new C# items.",
+          "order": 1
+        },
+        "c-sharp-utilities.newItemTemplate.namespacesToInclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "System",
+            "System.Collections.Generic",
+            "System.Text"
+          ],
+          "description": "Namespaces to include in a new C# item - this will only be used if the \"Include Using Statements\" setting is checked.",
+          "order": 2
+        }
+      }
+    },
     "menus": {
       "explorer/context": [
         {
