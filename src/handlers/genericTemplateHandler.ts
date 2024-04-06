@@ -198,10 +198,30 @@ export class GenericTemplateHandler {
 
         const editor = await vscode.window.showTextDocument(uri);
 
-        const newSelection = new vscode.Selection(
-            Config.genericTemplateCursorPosition,
-            Config.genericTemplateCursorPosition);
+        const position = this.getCursorPosition(editor.document);
+
+        const newSelection = new vscode.Selection(position, position);
 
         editor.selection = newSelection;
+    }
+
+    private getCursorPosition(document: vscode.TextDocument): vscode.Position {
+
+        let cursorLineNumber = 0;
+        let cursorColumnNumber = 0;
+
+        for (let lineNumber = 0; lineNumber < document.lineCount; lineNumber++) {
+            const line = document.lineAt(lineNumber);
+            if (line.text.includes("}")) {
+                cursorLineNumber = lineNumber - 1;
+                break;
+            }
+        }
+
+        cursorColumnNumber = document.lineAt(cursorLineNumber).text.length;
+
+        const position = new vscode.Position(cursorLineNumber, cursorColumnNumber);
+
+        return position;
     }
 }
