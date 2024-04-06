@@ -37,6 +37,26 @@ Currently the following types of items are supported:
 
 ![Adding a New Item](./assets/images/readme-add-item.gif)
 
+#### Settings
+
+- **File Scoped Namespace**
+
+  If this is checked, the new item will be created with file-scoped namespace. Otherwise, the "old" structure will be generated.
+
+  Default: `true`
+
+- **Include Using Statements**
+
+  If this is checked, the new item will be created with using statements for each namespace specified in the "Namespaces To Include" setting.
+
+  Default: `false`
+
+- **Namespaces To Include**
+
+  List of namespaces to generate using statements for when creating a new item.
+
+  Default: `System`, `System.Collections.Generic`, `System.Text`
+
 ### Manage Project References
 
 Right-clicking a `.csproj` file gives your the option to "Manage Project References..." which will open a menu showing all available projects in the workspace, with the ones already referenced being checked.
