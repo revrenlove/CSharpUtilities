@@ -1,8 +1,10 @@
 # Change Log
 
-## [1.8.0] - 2024/04/04
+## [1.12.0] - 2024/06/04
 
-- Extension now activates once VS Code is done starting up.
+- Extension now activates once VS Code is done starting up
+- Added settings to allow for generating new classes/interfaces/etc with file-scoped namespaces and whether or not to include using statements.
+- More sane CI/CD
 
 ## [1.2.0] - 2022/06/19
 

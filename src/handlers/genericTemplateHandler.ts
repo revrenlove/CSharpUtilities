@@ -8,7 +8,10 @@ import { Util } from '../util';
 import { inject, injectable } from 'inversify';
 import { FileHandler } from './fileHandler';
 import { CSharpProjectFactory } from './cSharpProjectFactory';
+import VSCodeConfiguration from '../vscode-configuration';
+import { EOL } from "node:os";
 
+// TODO: Rename this...
 @injectable()
 export class GenericTemplateHandler {
 
@@ -45,6 +48,7 @@ export class GenericTemplateHandler {
             namespace: namespace,
             objectType: TemplateType[templateType],
             objectName: objectName,
+            usings: this.generateUsingStatementsTemplateValue(),
         };
 
         const fileContentsString = await this.populateTemplate(template);
@@ -52,6 +56,18 @@ export class GenericTemplateHandler {
         await this.fileHandler.writeFile(newFileUris[1], fileContentsString);
 
         await this.openEditor(newFileUris[1]);
+    }
+
+    private generateUsingStatementsTemplateValue(): string {
+        if (VSCodeConfiguration.isImplicitUsings || VSCodeConfiguration.namespacesToInclude.length === 0) {
+            return "";
+        }
+
+        const usingStatements = VSCodeConfiguration.namespacesToInclude.map(namespace => `using ${namespace};`);
+
+        const templateValue = `${usingStatements.join(EOL)}${EOL}${EOL}`;
+
+        return templateValue;
     }
 
     private async getObjectName(templateType: TemplateType): Promise<string | undefined> {
@@ -180,7 +196,7 @@ export class GenericTemplateHandler {
 
     private async populateTemplate(templateValues: ItemFileTemplate): Promise<string> {
 
-        const templateUri = vscode.Uri.file(Config.genericTemplatePath);
+        const templateUri = vscode.Uri.file(this.getTemplatePath());
 
         let template = await this.fileHandler.readFile(templateUri);
 
@@ -192,6 +208,17 @@ export class GenericTemplateHandler {
         }
 
         return template;
+    }
+
+    private getTemplatePath(): string {
+
+        let templatePath = Config.namespaceEncapsulatedTemplatePath;
+
+        if (VSCodeConfiguration.isFileScopedNamespace) {
+            templatePath = Config.fileScopedNamespaceTemplatePath;
+        }
+
+        return templatePath;
     }
 
     private async openEditor(uri: vscode.Uri): Promise<void> {
