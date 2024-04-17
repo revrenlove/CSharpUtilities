@@ -3,9 +3,9 @@ import { AddEnumCommand } from "./addItem/addEnumCommand";
 import { AddInterfaceCommand } from "./addItem/addInterfaceCommand";
 import { AddRecordCommand } from "./addItem/addRecordCommand";
 import { AddStructCommand } from "./addItem/addStructCommand";
-import { ManageProjectReferencesCommand } from "./manageProjectReferencesCommand";
+import { ManageProjectReferencesCommand } from "./projectReference/manageProjectReferencesCommand";
 import { RefreshProjectReferenceTreeViewCommand } from "./projectReference/refreshProjectReferenceTreeViewCommand";
-import { SelectRootProjectCommand } from "./selectRootProjectCommand";
+import { SelectRootProjectCommand } from "./projectReference/selectRootProjectCommand";
 
 export {
     AddClassCommand,

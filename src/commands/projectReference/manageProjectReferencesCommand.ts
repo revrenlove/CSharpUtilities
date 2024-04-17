@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import TYPES from '../types';
+import TYPES from '../../types';
 import { inject, injectable } from 'inversify';
-import { ProjectReferenceHandler } from '../handlers/projectReferenceHandler';
-import { Command } from './command';
-import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
-import { ProjectReferenceTreeItem } from '../features/projectReferenceTree/projectReferenceTreeItem';
+import { ProjectReferenceHandler } from '../../handlers/projectReferenceHandler';
+import { Command } from '../command';
+import { CSharpProjectFactory } from '../../handlers/cSharpProjectFactory';
+import { ProjectReferenceTreeItem } from '../../features/projectReferenceTree/projectReferenceTreeItem';
 
 @injectable()
 export class ManageProjectReferencesCommand implements Command {

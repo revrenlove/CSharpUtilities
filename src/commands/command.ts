@@ -1,4 +1,4 @@
 export interface Command {
     id: string;
-    execute(...args: any[]): any;
+    execute(...args: any[]): Promise<void>;
 }

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import TYPES from '../types';
+import TYPES from '../../types';
 import { inject, injectable } from 'inversify';
-import { Command } from './command';
-import { QuickPickItemHelper } from '../helpers/quickPickItemHelper';
-import { CSharpProject } from '../handlers/cSharpProject';
-import { CSharpProjectFactory } from '../handlers/cSharpProjectFactory';
-import { ProjectReferenceTreeDataProvider } from '../features/projectReferenceTree/projectReferenceTreeDataProvider';
+import { Command } from '../command';
+import { QuickPickItemHelper } from '../../helpers/quickPickItemHelper';
+import { CSharpProject } from '../../handlers/cSharpProject';
+import { CSharpProjectFactory } from '../../handlers/cSharpProjectFactory';
+import { ProjectReferenceTreeDataProvider } from '../../features/projectReferenceTree/projectReferenceTreeDataProvider';
 
 @injectable()
 export class SelectRootProjectCommand implements Command {
