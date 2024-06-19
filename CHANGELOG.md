@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.12.1] - 2024/06/19
+
+- Addressing security vulnerability from `node_modules/braces`
+
 ## [1.12.0] - 2024/06/04
 
 - Extension now activates once VS Code is done starting up
