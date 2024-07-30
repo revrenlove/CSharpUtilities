@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.12.2] - 2024/07/29
+
+- Addressing security vulnerability from `fast-xml-parser`
+
 ## [1.12.1] - 2024/06/19
 
 - Addressing security vulnerability from `node_modules/braces`
