@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.12.4] - 2024/08/23
+
+- Addressing security vulnerability from `micromatch` (<https://github.com/advisories/GHSA-952p-6rrq-rcjv>)
+
 ## [1.12.2] - 2024/07/29
 
 - Addressing security vulnerability from `fast-xml-parser`
