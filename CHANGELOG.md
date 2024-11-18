@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.12.5] - 2024/11/18
+
+- Addressing security vulnerability from `cross-spawn`
+
 ## [1.12.4] - 2024/08/23
 
 - Addressing security vulnerability from `micromatch` (<https://github.com/advisories/GHSA-952p-6rrq-rcjv>)
