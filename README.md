@@ -120,6 +120,10 @@ Please, don't hesitate to [file an issue](https://github.com/revrenlove/CSharpUt
 
 ## Release Notes
 
+### 1.12.5
+
+- Addressing security vulnerability from `cross-spawn`
+
 ### 1.2.0
 
 - Adding project reference tree.
