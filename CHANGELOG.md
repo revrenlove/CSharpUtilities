@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.12.6]
+
+- Addressing vulnerability from `nanoid`
+
 ## [1.12.5] - 2024/11/18
 
 - Addressing security vulnerability from `cross-spawn`
